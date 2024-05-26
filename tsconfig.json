@@ -21,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/dashboard/@courses/[course]/attendance/page.jsx", "src/app/dashboard/@courses/[course]/attendance/page.jsx", "src/app/api/[courseName]/route.jsx"],
   "exclude": ["node_modules"]
 }
