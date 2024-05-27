@@ -65,7 +65,7 @@ const Page = () => {
           },
         });
 
-        const response = await fetch("https://localhost:3000/api/add-course", {
+        const response = await fetch("https://track-orpin-tau.vercel.app/api/add-course", {
           method: "POST",
           headers: {
             "Content-type": "application/json",

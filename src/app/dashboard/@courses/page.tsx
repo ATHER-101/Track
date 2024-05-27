@@ -11,7 +11,7 @@ const Page = () => {
   
   
   const fetchCourses = async()=>{
-    const response = await fetch("https://localhost:3000/api/courses");
+    const response = await fetch("https://track-orpin-tau.vercel.app/api/courses");
     const temp = await response.json();
     setCourses(temp);
   }

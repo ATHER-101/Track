@@ -92,7 +92,7 @@ const QrReader = ({ params }: { params: { course: string } }) => {
 
     console.log(JSON.stringify({ courseId, rollNo: scannedResult, date }));
 
-    const response = await fetch("https://localhost:3000/api/courses", {
+    const response = await fetch("https://track-orpin-tau.vercel.app/api/courses", {
       method: "PUT",
       headers: {
         "Content-type": "application/json",
