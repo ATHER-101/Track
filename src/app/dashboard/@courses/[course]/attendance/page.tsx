@@ -5,11 +5,7 @@ import { useEffect, useRef, useState } from "react";
 // Qr Scanner
 import QrScanner from "qr-scanner";
 
-const QrReader = (
-  { params
-  }: {
-    params: { course: String}
-  }) => {
+const QrReader = ({ params }: { params: { course: string } }) => {
   // QR States
   const scanner = useRef<QrScanner>();
   const videoEl = useRef<HTMLVideoElement>(null);
@@ -31,9 +27,11 @@ const QrReader = (
   };
 
   useEffect(() => {
-    if (videoEl?.current && !scanner.current) {
-      //Instantiate the QR Scanner
-      scanner.current = new QrScanner(videoEl?.current, onScanSuccess, {
+    const videoElement = videoEl.current; // Copy the ref to a local variable
+
+    if (videoElement && !scanner.current) {
+      // Instantiate the QR Scanner
+      scanner.current = new QrScanner(videoElement, onScanSuccess, {
         onDecodeError: onScanFail,
         // 📷 This is the camera facing mode. In mobile devices, "environment" means back camera and "user" means front camera.
         preferredCamera: "environment",
@@ -57,7 +55,7 @@ const QrReader = (
     // 🧹 Clean up on unmount.
     // 🚨 This removes the QR Scanner from rendering and using camera when it is closed or removed from the UI.
     return () => {
-      if (!videoEl?.current) {
+      if (!videoElement) {
         scanner?.current?.stop();
       }
     };
@@ -82,24 +80,24 @@ const QrReader = (
 
   const courseId = params.course;
   interface Res {
-    date:String,
-    present:String[]
+    date: string;
+    present: string[];
   }
 
-  const [res,setRes] = useState<Res[]>([])
+  const [res, setRes] = useState<Res[]>([]);
 
   const markAttendance = async () => {
     const date = getTodayDate();
     scanner?.current?.stop();
 
-    console.log(JSON.stringify({ courseId , rollNo: scannedResult, date }));
-    
+    console.log(JSON.stringify({ courseId, rollNo: scannedResult, date }));
+
     const response = await fetch("https://localhost:3000/api/courses", {
       method: "PUT",
       headers: {
         "Content-type": "application/json",
       },
-      body: JSON.stringify({ courseId , rollNo: scannedResult, date }),
+      body: JSON.stringify({ courseId, rollNo: scannedResult, date }),
     });
 
     const r = await response.json();
@@ -124,15 +122,7 @@ const QrReader = (
       </div>
 
       {scannedResult && (
-        <p
-        // style={{
-        //   position: "absolute",
-        //   top: 0,
-        //   left: 0,
-        //   zIndex: 99999,
-        //   color: "white",
-        // }}
-        >
+        <p>
           Scanned Result: {scannedResult}
         </p>
       )}
@@ -143,13 +133,15 @@ const QrReader = (
       >
         Mark
       </button>
-      {res.map((i)=>{
-        return <>
-          <div>{i.date}</div>
-          {i.present.map((j)=>{
-            <span>{j}</span>
-          })}
-        </>
+      {res.map((i) => {
+        return (
+          <div key={i.date}>
+            <div>{i.date}</div>
+            {i.present.map((j, index) => (
+              <span key={index}>{j}</span>
+            ))}
+          </div>
+        );
       })}
     </div>
   );

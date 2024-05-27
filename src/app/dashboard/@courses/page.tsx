@@ -6,7 +6,7 @@ import plus from "@/../public/plus.svg";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const page = () => {
+const Page = () => {
   const [courses,setCourses] = useState([])
   
   
@@ -48,4 +48,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
