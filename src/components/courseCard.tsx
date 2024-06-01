@@ -6,7 +6,7 @@ interface Props {
   courseId: String;
 }
 
-const courseCard = ({ courseName, courseId }: Props) => {
+const CourseCard = ({ courseName, courseId }: Props) => {
   const router = useRouter();
 
   const deleteCourse = async () => {
@@ -59,4 +59,4 @@ const courseCard = ({ courseName, courseId }: Props) => {
   );
 };
 
-export default courseCard;
+export default CourseCard;
