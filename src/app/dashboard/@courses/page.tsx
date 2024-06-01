@@ -5,13 +5,22 @@ import Image from "next/image";
 import plus from "@/../public/plus.svg";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 const Page = () => {
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/signIn");
+    },
+  });
+
   const [courses,setCourses] = useState([])
   
   
   const fetchCourses = async()=>{
-    const response = await fetch("https://track-orpin-tau.vercel.app/api/courses");
+    const response = await fetch("/api/courses");
     const temp = await response.json();
     setCourses(temp);
   }

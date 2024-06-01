@@ -1,7 +1,6 @@
 import connectToDB from '../../../../utils/connectDB';
 import Course from '../../../../models/Courses';
 import { NextResponse } from 'next/server';
-import { course_id } from '@/components/courseCard';
 
 export async function GET() {
     try {
@@ -67,18 +66,19 @@ export async function PUT(request) {
     }
 }
 
+export async function DELETE(request) {
+    const body = await request.json();
+    const courseId = body.courseId;
+    try {
+        await connectToDB();
+        const deletedCourse = await Course.findByIdAndDelete(courseId);
 
+        if (!deletedCourse) {
+            return new NextResponse(JSON.stringify({ message: 'Course not found' }), { status: 404 });
+        }
 
-// import {courseDetails} from "../data";
-
-
-// export async function GET() {
-//     return Response.json(courseDetails);
-// }
-
-// export async function POST(request) {
-//     const data = await request.json();
-//     courseDetails.push({name:data.name,schedule:data.schedule,students:data.students})
-
-//     return Response.json(courseDetails);
-// }
+        return new NextResponse(JSON.stringify(deletedCourse), { status: 200 });
+    } catch (error) {
+        return new NextResponse(error);
+    }
+}

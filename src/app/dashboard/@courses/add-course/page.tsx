@@ -3,9 +3,17 @@
 import { useRef, useState } from "react";
 import ScheduleButton from "@/components/scheduleButton";
 import Papa from "papaparse";
-import Router, { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const Page = () => {
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/signIn");
+    },
+  });
+
   const [course, setCourse] = useState<string>("");
   const [schedule, setSchedule] = useState<{
     [key: string]: { active: string; time: string };
@@ -65,26 +73,37 @@ const Page = () => {
               students.push(i[0]);
             });
 
-            const response = await fetch(
-              "https://track-orpin-tau.vercel.app/api/courses",
-              {
-                method: "POST",
+            const response = await fetch("/api/courses", {
+              method: "POST",
+              headers: {
+                "Content-type": "application/json",
+              },
+              body: JSON.stringify({
+                courseName: course,
+                schedule: schedule,
+                students: students,
+                attendance: [],
+              }),
+            });
+
+            const res = await response.json();
+            console.log(res);
+
+            res.students.map(async (rollNo: String) => {
+              const studentResponse = await fetch("/api/students", {
+                method: "PUT",
                 headers: {
                   "Content-type": "application/json",
                 },
                 body: JSON.stringify({
-                  courseName: course,
-                  schedule: schedule,
-                  students: students,
-                  attendance: [],
+                  rollNo: rollNo,
+                  courseId: res._id,
                 }),
-              }
-            );
+              });
 
-            console.log(response);
-
-            const res = await response.json();
-            console.log(res);
+              const studentRes = await studentResponse.json();
+              console.log(studentRes);
+            });
 
             router.back();
           },

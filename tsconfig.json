@@ -21,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/dashboard/@courses/[course]/attendance/page.jsx", "src/app/dashboard/@courses/[course]/attendance/page.jsx", "src/app/api/[courseName]/route.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/dashboard/@courses/[course]/attendance/page.jsx", "src/app/dashboard/@courses/[course]/attendance/page.jsx", "src/app/api/[courseName]/route.jsx", "src/middleware.js"],
   "exclude": ["node_modules"]
 }

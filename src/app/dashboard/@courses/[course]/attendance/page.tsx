@@ -4,8 +4,17 @@ import { useEffect, useRef, useState } from "react";
 
 // Qr Scanner
 import QrScanner from "qr-scanner";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 const QrReader = ({ params }: { params: { course: string } }) => {
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/signIn");
+    },
+  });
+
   // QR States
   const scanner = useRef<QrScanner>();
   const videoEl = useRef<HTMLVideoElement>(null);
@@ -92,7 +101,7 @@ const QrReader = ({ params }: { params: { course: string } }) => {
 
     console.log(JSON.stringify({ courseId, rollNo: scannedResult, date }));
 
-    const response = await fetch("https://track-orpin-tau.vercel.app/api/courses", {
+    const response = await fetch("/api/courses", {
       method: "PUT",
       headers: {
         "Content-type": "application/json",
