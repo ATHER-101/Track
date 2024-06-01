@@ -2,7 +2,6 @@
 
 import StudentCourseCard from "@/components/studentCourseCard";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 

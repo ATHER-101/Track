@@ -6,7 +6,6 @@ interface Props {
 }
 
 const CourseCard = ({ courseName, courseId }: Props) => {
-
   const deleteCourse = async () => {
     const deletedCourse = await fetch("/api/courses", {
       method: "DELETE",
@@ -32,6 +31,17 @@ const CourseCard = ({ courseName, courseId }: Props) => {
           courseId: courseId,
         }),
       });
+    });
+
+    await fetch("/api/professors", {
+      method: "DELETE",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({
+        emailId: deleteRes.professor,
+        courseId: courseId,
+      }),
     });
 
     // router;

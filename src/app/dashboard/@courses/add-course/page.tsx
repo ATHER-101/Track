@@ -14,6 +14,10 @@ const Page = () => {
     },
   });
 
+  const email = session?.user?.email;
+  const emailId = email?.split("@")[0];
+  console.log(emailId);
+
   const [course, setCourse] = useState<string>("");
   const [schedule, setSchedule] = useState<{
     [key: string]: { active: string; time: string };
@@ -82,6 +86,7 @@ const Page = () => {
                 courseName: course,
                 schedule: schedule,
                 students: students,
+                professor: emailId,
                 attendance: [],
               }),
             });
@@ -104,6 +109,20 @@ const Page = () => {
               const studentRes = await studentResponse.json();
               console.log(studentRes);
             });
+
+            const professorResponse = await fetch("/api/professors", {
+              method: "PUT",
+              headers: {
+                "Content-type": "application/json",
+              },
+              body: JSON.stringify({
+                emailId: emailId,
+                courseId: res._id,
+              }),
+            });
+
+            const professorRes = await professorResponse.json();
+            console.log(professorRes);
 
             router.back();
           },

@@ -145,9 +145,9 @@ const QrReader = ({ params }: { params: { course: string } }) => {
       {res.map((i) => {
         return (
           <div key={i.date}>
-            <div>{i.date}</div>
+            <div className="mx-3 my-1 text-blue-700 text-lg font-medium">{i.date}</div>
             {i.present.map((j, index) => (
-              <span key={index}>{j}</span>
+              <span key={index} className="mx-3 text-blue-500">{j}</span>
             ))}
           </div>
         );

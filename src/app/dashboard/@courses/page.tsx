@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import CourseCard from "@/components/courseCard";
 import Image from "next/image";
@@ -16,26 +16,61 @@ const Page = () => {
     },
   });
 
-  const [courses,setCourses] = useState([])
-  
-  
-  const fetchCourses = async()=>{
-    const response = await fetch("/api/courses");
-    const temp = await response.json();
-    setCourses(temp);
-  }
+  const email = session?.user?.email;
+  const emailId = email?.split("@")[0];
+  console.log(emailId);
 
-  useEffect(()=>{
+  const [courses, setCourses] = useState<any[]>([]);
+
+  const fetchCourses = async () => {
+    if (emailId) {
+      const response = await fetch(`/api/professors/${emailId}`);
+      const res = await response.json();
+
+      console.log(res);
+      console.log(res.courses);
+
+      if (res.error === "Professor not found") {
+        await fetch("/api/professors", {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify({
+            emailId: emailId,
+            courses: [],
+          }),
+        });
+      } else {
+        let tempCourses: any[] = [];
+        res.courses.forEach(async (element: string) => {
+          const response = await fetch(`/api/courses/${element}`);
+          const res = await response.json();
+
+          tempCourses.push({ courseId: element, courseName: res.courseName });
+        });
+        setCourses(tempCourses);
+      }
+    }
+  };
+
+  useEffect(() => {
     fetchCourses();
-  },[])
+  }, [emailId]);
 
   return (
     <>
       <div className="bg-blue-300 m-6 p-6 ">
         <div>Courses</div>
         <div className="flex flex-row flex-wrap  overflow-auto w-[950px]">
-          {courses.map((course:any) => {
-            return <CourseCard key={course._id} courseName={course.courseName} courseId={course._id} />;
+          {courses.map((course: any) => {
+            return (
+              <CourseCard
+                key={course.courseId}
+                courseId={course.courseId}
+                courseName={course.courseName}
+              />
+            );
           })}
 
           <Link
