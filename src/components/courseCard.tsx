@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 interface Props {
   courseName: String;
@@ -7,7 +6,6 @@ interface Props {
 }
 
 const CourseCard = ({ courseName, courseId }: Props) => {
-  const router = useRouter();
 
   const deleteCourse = async () => {
     const deletedCourse = await fetch("/api/courses", {
