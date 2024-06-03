@@ -57,7 +57,7 @@ const Page = () => {
 
   return (
     <>
-      <div className="bg-blue-300 m-6 p-6 ">
+      <div className="bg-blue-300 my-5 ml-5 p-6 ">
         <div>Courses</div>
         <div className="flex flex-row flex-wrap  overflow-auto w-[950px]">
           {courses.map((course: any) => {
