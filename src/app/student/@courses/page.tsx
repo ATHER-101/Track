@@ -44,7 +44,17 @@ const Page = () => {
           const response = await fetch(`/api/courses/${element}`);
           const res = await response.json();
 
-          tempCourses.push({ courseId: element, courseName: res.courseName });
+          let presentCount:number = 0;
+
+          const attendance = res.attendance;
+          attendance.map((element:any)=>{
+            const found = element.present.find((element:any) => element === rollNo);
+            if(found!==undefined){
+              presentCount++;
+            }
+          })
+
+          tempCourses.push({ courseId: element,totalAttendance:presentCount,totalClasses:res.attendance.length, courseName: res.courseName });
         });
         setCourses(tempCourses);
       }
@@ -65,6 +75,8 @@ const Page = () => {
               <StudentCourseCard
                 key={course.courseId}
                 courseId={course.courseId}
+                totalAttendance={course.totalAttendance}
+                totalClasses={course.totalClasses}
                 courseName={course.courseName}
               />
             );

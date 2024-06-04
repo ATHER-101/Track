@@ -43,11 +43,11 @@ const Page = () => {
         });
       } else {
         let tempCourses: any[] = [];
-        res.courses.forEach(async (element: string) => {
-          const response = await fetch(`/api/courses/${element}`);
+        res.courses.forEach(async (course_id: string) => {
+          const response = await fetch(`/api/courses/${course_id}`);
           const res = await response.json();
 
-          tempCourses.push({ courseId: element, courseName: res.courseName });
+          tempCourses.push({ courseId: course_id ,totalClasses:res.attendance.length, courseName: res.courseName });
         });
         setCourses(tempCourses);
       }
@@ -67,6 +67,7 @@ const Page = () => {
             return (
               <CourseCard
                 key={course.courseId}
+                totalClasses={course.totalClasses}
                 courseId={course.courseId}
                 courseName={course.courseName}
               />
