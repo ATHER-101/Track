@@ -53,7 +53,7 @@ const CourseCard = ({ courseName, courseId, totalClasses }: Props) => {
       <div className="font-bold">{courseName}</div>
       <div className="text-sm">{String(totalClasses)} {totalClasses===1?"class":"classes"} till now</div>
       <Link
-        href={`/dashboard/${courseId}/attendance`}
+        href={`/dashboard/${courseId}`}
         className="bg-blue-300 hover:bg-blue-700 text-sm py-1 px-3 my-2 rounded"
       >
         Attendance
