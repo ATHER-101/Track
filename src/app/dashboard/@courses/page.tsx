@@ -92,19 +92,6 @@ const Page = () => {
   }, [emailId]);
 
   return (
-    // <Link
-    //         href="/dashboard/add-course"
-    //         className="bg-blue-500 hover:bg-blue-700 p-2 my-3 h-[140px] w-[170px] flex justify-center items-center"
-    //       >
-    //         <Image
-    //           src={plus}
-    //           width={50}
-    //           height={50}
-    //           alt="Picture of the author"
-    //           placeholder="empty"
-    //           priority={false}
-    //         />
-    //       </Link>
     <>
       <Paper
         style={{
@@ -120,7 +107,7 @@ const Page = () => {
         <Grid container spacing={2}>
           {courses.map((course: any) => {
             return (
-              <Grid item xs={6} md={2.5}>
+              <Grid key={course.course_id} item xs={6} md={2.5}>
                 <Box width="100%">
                   <CourseCard
                     key={course.courseId}
