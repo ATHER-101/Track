@@ -1,3 +1,7 @@
+import Box from "@mui/material/Box";
+import { Grid, Button, Paper, Typography } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
+
 import Link from "next/link";
 
 interface Props {
@@ -49,22 +53,39 @@ const CourseCard = ({ courseName, courseId, totalClasses }: Props) => {
   };
 
   return (
-    <div className="bg-blue-500 p-2 my-3 mr-3 flex flex-col h-[140px] w-[170px]">
-      <div className="font-bold">{courseName}</div>
-      <div className="text-sm">{String(totalClasses)} {totalClasses===1?"class":"classes"} till now</div>
-      <Link
-        href={`/dashboard/${courseId}`}
-        className="bg-blue-300 hover:bg-blue-700 text-sm py-1 px-3 my-2 rounded"
-      >
-        Attendance
-      </Link>
-      <button
-        className="bg-red-300 hover:bg-red-700 text-sm py-1 px-3 my-1 rounded"
-        onClick={deleteCourse}
-      >
-        Delete Course
-      </button>
-    </div>
+    // <div className="bg-blue-500 p-2 my-3 mr-3 flex flex-col h-[140px] w-[170px]">
+    //   <div className="font-bold">{courseName}</div>
+    //   <div className="text-sm">{String(totalClasses)} {totalClasses===1?"class":"classes"} till now</div>
+    //   <Link
+    //     href={`/dashboard/${courseId}`}
+    //     className="bg-blue-300 hover:bg-blue-700 text-sm py-1 px-3 my-2 rounded"
+    //   >
+    //     Attendance
+    //   </Link>
+    //   <button
+    //     className="bg-red-300 hover:bg-red-700 text-sm py-1 px-3 my-1 rounded"
+    //     onClick={deleteCourse}
+    //   >
+    //     Delete Course
+    //   </button>
+    // </div>
+    <Paper sx={{ bgcolor:"#ffffff", width: "100%" }}>
+        <Typography variant="h6" sx={{pt:1}}>{courseName}</Typography>
+        <Typography variant="body1">
+        {String(totalClasses)} {totalClasses===1?"class":"classes"} till now
+        </Typography>
+        
+        <Button
+          variant="contained"
+          href={`/dashboard/${courseId}`}
+          sx={{ mt: 1, width:"85%" }}
+        >Attendance</Button>
+        <Button
+          variant="outlined"
+          onClick={deleteCourse}
+          sx={{ mb:2,mt:1,width:"85%" }}
+        >Delete Course</Button>
+      </Paper>
   );
 };
 

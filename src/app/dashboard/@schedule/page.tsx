@@ -1,5 +1,8 @@
 "use client";
 
+import Box from "@mui/material/Box";
+import { Grid, Paper, Typography } from "@mui/material";
+
 import ScheduleCalendar from "@/components/Calendar";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
@@ -105,18 +108,18 @@ const Page = () => {
 
   return (
     <>
-      <div className="bg-blue-300 my-5 mr-5">
-        <div className="mx-5 pt-4">Schedule</div>
+      <Box width="100%">
+        <Typography variant="h5" sx={{ mb: 2 ,color:"white"}}>
+          Schedule
+        </Typography>
         <ScheduleCalendar date={date} setDate={setDate} />
-        <div className="flex justify-center">
-          <div className="w-[86%] mb-4 p-2 bg-blue-500">
+        <Paper sx={{p:1}}>
             {schedule.map((element)=>{
-                return <div key={element.courseName} className="px-3">{element.courseName} : {element.time}</div>
+                return <Typography variant="body1" key={element.courseName} className="px-3">{element.courseName} : {element.time}</Typography>
             })}
             {schedule.length==0?"No classes today!":false}
-          </div>
-        </div>
-      </div>
+        </Paper>
+      </Box>
     </>
   );
 };

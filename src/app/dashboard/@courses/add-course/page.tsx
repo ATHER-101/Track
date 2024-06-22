@@ -5,6 +5,9 @@ import ScheduleButton from "@/components/scheduleButton";
 import Papa from "papaparse";
 import { redirect, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import FileUpload from "../../../../components/FileUpload";
+import { Box, Typography, Paper, Button, Grid, TextField } from "@mui/material";
+import { WidthFull } from "@mui/icons-material";
 
 const Page = () => {
   const { data: session } = useSession({
@@ -30,6 +33,7 @@ const Page = () => {
     Saturday: { active: "false", time: "" },
     Sunday: { active: "false", time: "" },
   });
+  const [file, setFile] = useState(null);
 
   const handleCourseInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCourse(event.target.value);
@@ -42,7 +46,7 @@ const Page = () => {
     }));
   };
 
-  const file = useRef<HTMLInputElement>(null);
+  // const file = useRef<HTMLInputElement>(null);
 
   const router = useRouter();
 
@@ -64,7 +68,7 @@ const Page = () => {
         `Please give correct course timings for ${invalidDays.join(", ")}`
       );
     } else {
-      const csvFile = file.current?.files?.[0] ?? null;
+      const csvFile = file;
 
       if (csvFile !== null) {
         Papa.parse(csvFile, {
@@ -134,45 +138,73 @@ const Page = () => {
   };
 
   return (
-    <>
-      <h1 className="m-2 text-xl">Add Course</h1>
+    <Paper sx={{ bgcolor: "#f2eeee", p: 2 }}>
+      <Box>
+        <Typography variant="h6" paddingBottom={2}>
+          Add Course
+        </Typography>
 
-      <label htmlFor="course" className="m-2 text-lg">
-        Course Name
-      </label>
-      <input
-        id="course"
-        className="block my-1 mx-2 border-2 border-blue-500 rounded"
-        type="text"
-        value={course}
-        onChange={handleCourseInput}
-      />
+        <Grid item sm={12} md={9} lg={8}>
+          <TextField
+            label="Course Name"
+            variant="outlined"
+            size="small"
+            value={course}
+            onChange={handleCourseInput}
+            sx={{ width: "100%" }}
+          />
+        </Grid>
 
-      <div className="m-2 text-lg">Schedule</div>
-      {Object.keys(schedule).map((day) => (
-        <ScheduleButton key={day} day={day} onToggle={handleToggle} />
-      ))}
+        {Object.keys(schedule).map((day) => (
+          <ScheduleButton key={day} day={day} onToggle={handleToggle} />
+        ))}
 
-      <label className="m-2 text-lg" htmlFor="large_size">
-        Large file input
-      </label>
-      <input
-        ref={file}
-        className="m-2 block w-full border-2 border-blue-500 rounded text-lg text-blue-500 focus:z-10 focus:border-blue-500 focus:ring-blue-500
+        <FileUpload file={file} setFile={setFile} />
+
+        <Grid item sm={12} md={9} lg={8}>
+          <Button variant="contained" fullWidth onClick={submit}>
+            Add Course
+          </Button>
+        </Grid>
+
+        {/* <h1 className="m-2 text-xl">Add Course</h1> */}
+        {/* <label htmlFor="course" className="p-2 text-lg">
+          Course Name
+        </label>
+        <input
+          id="course"
+          className="block my-1 mx-2 border-2 border-blue-500 rounded"
+          type="text"
+          value={course}
+          onChange={handleCourseInput}
+        />
+
+        <div className="m-2 text-lg">Schedule</div>
+        {Object.keys(schedule).map((day) => (
+          <ScheduleButton key={day} day={day} onToggle={handleToggle} />
+        ))}
+
+        <label className="m-2 text-lg" htmlFor="large_size">
+          Large file input
+        </label>
+        <input
+          ref={file}
+          className="m-2 block w-full border-2 border-blue-500 rounded text-lg text-blue-500 focus:z-10 focus:border-blue-500 focus:ring-blue-500
         file:bg-blue-500 file:hover:bg-blue-700 hover:border-blue-700 file:border-0
         file:me-3
         file:py-1 file:px-4 file:text-white"
-        id="large_size"
-        type="file"
-      />
+          id="large_size"
+          type="file"
+        />
 
-      <button
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 my-5 mx-2 rounded"
-        onClick={submit}
-      >
-        Add Course
-      </button>
-    </>
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 my-5 mx-2 rounded"
+          onClick={submit}
+        >
+          Add Course
+        </button> */}
+      </Box>
+    </Paper>
   );
 };
 

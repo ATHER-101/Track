@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Calendar from "react-calendar";
 import styles from './Calendar.module.css';
 import 'react-calendar/dist/Calendar.css';

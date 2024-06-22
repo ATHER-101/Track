@@ -1,5 +1,8 @@
 "use client";
 
+import Box from "@mui/material/Box";
+import { Grid, Typography } from "@mui/material";
+
 import StudentCourseCard from "@/components/studentCourseCard";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
@@ -44,17 +47,24 @@ const Page = () => {
           const response = await fetch(`/api/courses/${element}`);
           const res = await response.json();
 
-          let presentCount:number = 0;
+          let presentCount: number = 0;
 
           const attendance = res.attendance;
-          attendance.map((element:any)=>{
-            const found = element.present.find((element:any) => element === rollNo);
-            if(found!==undefined){
+          attendance.map((element: any) => {
+            const found = element.present.find(
+              (element: any) => element === rollNo
+            );
+            if (found !== undefined) {
               presentCount++;
             }
-          })
+          });
 
-          tempCourses.push({ courseId: element,totalAttendance:presentCount,totalClasses:res.attendance.length, courseName: res.courseName });
+          tempCourses.push({
+            courseId: element,
+            totalAttendance: presentCount,
+            totalClasses: res.attendance.length,
+            courseName: res.courseName,
+          });
         });
         setCourses(tempCourses);
       }
@@ -67,22 +77,26 @@ const Page = () => {
 
   return (
     <>
-      <div className="bg-blue-300 my-5 ml-5 p-6 ">
-        <div>Courses</div>
-        <div className="flex flex-row flex-wrap  overflow-auto w-[950px]">
+      <Box width="100%">
+        <Typography variant="h5" sx={{mb:2}}>Courses</Typography>
+        <Grid container spacing={2}>
           {courses.map((course: any) => {
             return (
-              <StudentCourseCard
-                key={course.courseId}
-                courseId={course.courseId}
-                totalAttendance={course.totalAttendance}
-                totalClasses={course.totalClasses}
-                courseName={course.courseName}
-              />
+              <Grid item xs={6} md={2.5}>
+                <Box width="100%">
+                  <StudentCourseCard
+                    key={course.courseId}
+                    courseId={course.courseId}
+                    totalAttendance={course.totalAttendance}
+                    totalClasses={course.totalClasses}
+                    courseName={course.courseName}
+                  />
+                </Box>
+              </Grid>
             );
           })}
-        </div>
-      </div>
+        </Grid>
+      </Box>
     </>
   );
 };

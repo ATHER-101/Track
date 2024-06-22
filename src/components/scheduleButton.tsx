@@ -1,13 +1,20 @@
 import { ChangeEvent, useState } from "react";
+import { TextField, Button, Box, Grid } from "@mui/material";
 
-const ScheduleButton = ({ day, onToggle }: { day: string, onToggle: (day: string, active: string, time: string) => void }) => {
+const ScheduleButton = ({
+  day,
+  onToggle,
+}: {
+  day: string;
+  onToggle: (day: string, active: string, time: string) => void;
+}) => {
   const [active, setActive] = useState<string>("false");
   const [time, setTime] = useState<string>("");
 
   const handleToggle = () => {
-    setActive(active==="true"?"false":"true");
+    setActive(active === "true" ? "false" : "true");
     setTime("");
-    onToggle(day, active==="true"?"false":"true", "");
+    onToggle(day, active === "true" ? "false" : "true", "");
   };
 
   const handleTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -17,27 +24,27 @@ const ScheduleButton = ({ day, onToggle }: { day: string, onToggle: (day: string
 
   return (
     <>
-      <div>
-        <label
-          htmlFor={day}
-          className={
-            active==="true"
-              ? "bg-blue-500 text-white font-bold py-1 px-3 mx-2 my-1 border-2 border-blue-500 rounded inline-block"
-              : "bg-white border-2 border-blue-500 text-blue-500 font-bold py-1 px-3 mx-2 my-1 rounded inline-block"
-          }
-        >
-          {day}
-        </label>
+      <Grid container spacing={2} sx={{ my: "1px" }}>
+        <Grid item md={3} lg={2}>
+          <Button
+            variant={active === "true" ? "contained" : "outlined"}
+            sx={{ width: "100%" }}
+          >
+            <label htmlFor={day}>{day}</label>
+          </Button>
+        </Grid>
         <input
           id={day}
           className="hidden"
           type="checkbox"
-          checked={active==="true"?true:false}
+          checked={active === "true" ? true : false}
           onChange={handleToggle}
         />
-        <div className={active==="true" ? "inline-block" : "hidden"}>
-          <label htmlFor={`${day}-input`} className="m-2 inline-block text-lg">
-            Timing:
+
+        <Grid item md={6} lg={6} className={active === "true" ? "inline-block" : "hidden"}>
+          {/* <div className={active === "true" ? "inline-block" : "hidden"}> */}
+            {/* <label htmlFor={`${day}-input`} className="m-2 inline-block text-lg">
+            Timing
           </label>
           <input
             id={`${day}-input`}
@@ -45,10 +52,20 @@ const ScheduleButton = ({ day, onToggle }: { day: string, onToggle: (day: string
             type="text"
             value={time}
             onChange={handleTimeChange}
-            placeholder="eg: 8:30-9:30" 
-          />
-        </div>
-      </div>
+            placeholder="eg: 8:30-9:30"
+          /> */}
+            <TextField
+              label="Timing"
+              id="outlined-size-small"
+              placeholder="8:30-9:30"
+              value={time}
+              onChange={handleTimeChange}
+              size="small"
+              fullWidth
+            />
+          {/* </div> */}
+        </Grid>
+      </Grid>
     </>
   );
 };

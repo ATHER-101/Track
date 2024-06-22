@@ -1,5 +1,11 @@
 "use client";
 
+import Stack from "@mui/material/Stack";
+import { createSvgIcon } from "@mui/material/utils";
+
+import Box from "@mui/material/Box";
+import { Grid, Paper, SvgIcon, Button, Typography } from "@mui/material";
+
 import CourseCard from "@/components/courseCard";
 import Image from "next/image";
 import plus from "@/../public/plus.svg";
@@ -7,6 +13,23 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
+
+const PlusIcon = createSvgIcon(
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1}
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12 4.5v15m7.5-7.5h-15"
+    />
+  </svg>,
+  "Plus"
+);
 
 const Page = () => {
   const { data: session } = useSession({
@@ -24,7 +47,9 @@ const Page = () => {
 
   const fetchCourses = async () => {
     if (emailId) {
-      const response = await fetch(`/api/professors/${emailId}`);
+      const response = await fetch(`/api/professors/${emailId}`, {
+        cache: "no-store",
+      });
       const res = await response.json();
 
       console.log(res);
@@ -44,10 +69,18 @@ const Page = () => {
       } else {
         let tempCourses: any[] = [];
         res.courses.forEach(async (course_id: string) => {
-          const response = await fetch(`/api/courses/${course_id}`);
+          const response = await fetch(`/api/courses/${course_id}`, {
+            cache: "no-store",
+          });
           const res = await response.json();
 
-          tempCourses.push({ courseId: course_id ,totalClasses:res.attendance.length, courseName: res.courseName });
+          console.log(res);
+
+          tempCourses.push({
+            courseId: course_id,
+            totalClasses: res.attendance.length,
+            courseName: res.courseName,
+          });
         });
         setCourses(tempCourses);
       }
@@ -59,36 +92,71 @@ const Page = () => {
   }, [emailId]);
 
   return (
+    // <Link
+    //         href="/dashboard/add-course"
+    //         className="bg-blue-500 hover:bg-blue-700 p-2 my-3 h-[140px] w-[170px] flex justify-center items-center"
+    //       >
+    //         <Image
+    //           src={plus}
+    //           width={50}
+    //           height={50}
+    //           alt="Picture of the author"
+    //           placeholder="empty"
+    //           priority={false}
+    //         />
+    //       </Link>
     <>
-      <div className="bg-blue-300 m-6 p-6 ">
-        <div>Courses</div>
-        <div className="flex flex-row flex-wrap  overflow-auto w-[950px]">
+      <Paper
+        style={{
+          padding: "16px",
+          textAlign: "center",
+          backgroundColor: "#29b6f6",
+          color: "white",
+        }}
+      >
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          Courses
+        </Typography>
+        <Grid container spacing={2}>
           {courses.map((course: any) => {
             return (
-              <CourseCard
-                key={course.courseId}
-                totalClasses={course.totalClasses}
-                courseId={course.courseId}
-                courseName={course.courseName}
-              />
+              <Grid item xs={6} md={2.5}>
+                <Box width="100%">
+                  <CourseCard
+                    key={course.courseId}
+                    courseId={course.courseId}
+                    totalClasses={course.totalClasses}
+                    courseName={course.courseName}
+                  />
+                </Box>
+              </Grid>
             );
           })}
-
-          <Link
-            href="/dashboard/add-course"
-            className="bg-blue-500 hover:bg-blue-700 p-2 my-3 h-[140px] w-[170px] flex justify-center items-center"
-          >
-            <Image
-              src={plus}
-              width={50}
-              height={50}
-              alt="Picture of the author"
-              placeholder="empty"
-              priority={false}
-            />
-          </Link>
-        </div>
-      </div>
+          <Grid item xs={6} md={2.5}>
+            <Paper
+              sx={{
+                bgcolor: "white",
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                variant="outlined"
+                href="/dashboard/add-course"
+                sx={{ border: 1, height: "80%", width: "80%" }}
+              >
+                <SvgIcon
+                  component={PlusIcon}
+                  style={{ width: 100, height: 100 }}
+                />
+              </Button>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Paper>
     </>
   );
 };
