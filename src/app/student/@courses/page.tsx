@@ -6,7 +6,7 @@ import { Grid, Typography } from "@mui/material";
 import StudentCourseCard from "@/components/studentCourseCard";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const Page = () => {
   const { data: session } = useSession({
@@ -16,19 +16,16 @@ const Page = () => {
     },
   });
 
-  const email = session?.user?.email;
-  const rollNo = email?.split("@")[0];
-  console.log(rollNo);
+  const [rollNo, setRollNo] = useState<string | undefined>();
 
   const [courses, setCourses] = useState<any[]>([]);
 
-  const fetchCourses = async () => {
-    if (rollNo) {
-      const response = await fetch(`/api/students/${rollNo}`);
+  const fetchCourses = useCallback(async (rollNo: string) => {
+    try {
+      const response = await fetch(`/api/students/${rollNo}`, {
+        cache: "no-store",
+      });
       const res = await response.json();
-
-      console.log(res);
-      console.log(res.courses);
 
       if (res.error === "Student not found") {
         await fetch("/api/students", {
@@ -37,52 +34,62 @@ const Page = () => {
             "Content-type": "application/json",
           },
           body: JSON.stringify({
-            rollNo: rollNo,
+            emailId: rollNo,
             courses: [],
           }),
         });
       } else {
-        let tempCourses: any[] = [];
-        res.courses.forEach(async (element: string) => {
-          const response = await fetch(`/api/courses/${element}`);
-          const res = await response.json();
+        const tempCourses = await Promise.all(
+          res.courses.map(async (course_id: string) => {
+            const courseResponse = await fetch(`/api/courses/${course_id}`, {
+              cache: "no-store",
+            });
+            const courseData = await courseResponse.json();
 
-          let presentCount: number = 0;
+            let presentCount: number = 0;
+            courseData.attendance.map((element: any) => {
+              const found = element.present.find(
+                (element: any) => element === rollNo
+              );
+              if (found !== undefined) {
+                presentCount++;
+              }
+            });
 
-          const attendance = res.attendance;
-          attendance.map((element: any) => {
-            const found = element.present.find(
-              (element: any) => element === rollNo
-            );
-            if (found !== undefined) {
-              presentCount++;
-            }
-          });
-
-          tempCourses.push({
-            courseId: element,
-            totalAttendance: presentCount,
-            totalClasses: res.attendance.length,
-            courseName: res.courseName,
-          });
-        });
+            return {
+              courseId: course_id,
+              totalAttendance: presentCount,
+              totalClasses: courseData.attendance.length,
+              courseName: courseData.courseName,
+            };
+          })
+        );
         setCourses(tempCourses);
       }
+    } catch (error) {
+      console.error("Failed to fetch courses:", error);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchCourses();
-  }, [rollNo]);
+    if (session?.user?.email) {
+      const email = session.user.email;
+      const rollNo = email.split("@")[0];
+      setRollNo(rollNo);
+      fetchCourses(rollNo);
+    }
+  }, [session, fetchCourses]);
 
   return (
     <>
       <Box width="100%">
-        <Typography variant="h5" sx={{mb:2}}>Courses</Typography>
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          Courses
+        </Typography>
         <Grid container spacing={2}>
           {courses.map((course: any) => {
             return (
-              <Grid key={course.course_id} item xs={6} md={2.5}>
+              <Grid key={course.courseId} item xs={6} md={2.5}>
                 <Box width="100%">
                   <StudentCourseCard
                     key={course.courseId}

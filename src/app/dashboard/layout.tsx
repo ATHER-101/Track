@@ -16,13 +16,6 @@ export default function Layout({
   schedule: React.ReactNode;
 }) {
   return (
-    // <>
-    //   <div>{children}</div>
-    //   <div className="flex justify-between">
-    //     <div>{courses}</div>
-    //     <div>{schedule}</div>
-    //   </div>
-    // </>
     <>
       <div>{children}</div>
       <Box sx={{ p: 2 }}>

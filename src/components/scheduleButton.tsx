@@ -41,28 +41,21 @@ const ScheduleButton = ({
           onChange={handleToggle}
         />
 
-        <Grid item md={6} lg={6} className={active === "true" ? "inline-block" : "hidden"}>
-          {/* <div className={active === "true" ? "inline-block" : "hidden"}> */}
-            {/* <label htmlFor={`${day}-input`} className="m-2 inline-block text-lg">
-            Timing
-          </label>
-          <input
-            id={`${day}-input`}
-            className="m-2 py-1 px-3 border-2 border-blue-200 rounded inline-block"
-            type="text"
+        <Grid
+          item
+          md={6}
+          lg={6}
+          className={active === "true" ? "inline-block" : "hidden"}
+        >
+          <TextField
+            label="Timing"
+            id="outlined-size-small"
+            placeholder="8:30-9:30"
             value={time}
             onChange={handleTimeChange}
-            placeholder="eg: 8:30-9:30"
-          /> */}
-            <TextField
-              label="Timing"
-              id="outlined-size-small"
-              placeholder="8:30-9:30"
-              value={time}
-              onChange={handleTimeChange}
-              size="small"
-              fullWidth
-            />
+            size="small"
+            fullWidth
+          />
           {/* </div> */}
         </Grid>
       </Grid>

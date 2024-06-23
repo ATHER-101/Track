@@ -1,5 +1,9 @@
+// import React, {Suspense , lazy} from "react";
+
 import Box from "@mui/material/Box";
 import { Grid, Paper, Typography} from "@mui/material";
+
+// const Courses = lazy(()=>import("./@courses/page"));
 
 export const metadata = {
   title: "Next.js",
@@ -31,6 +35,9 @@ export default function Layout({
               }}
             >
               {courses}
+              {/* <Suspense fallback={<div>Loading courses...</div>}>
+                <Courses />
+              </Suspense> */}
             </Paper>
           </Grid>
           <Grid item xs={12} md={3}>
