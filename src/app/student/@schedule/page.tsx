@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from "react";
 import Box from "@mui/material/Box";
 import { Paper, Typography } from "@mui/material";
 import ScheduleCalendar from "@/components/Calendar";
@@ -28,38 +28,27 @@ const Page = () => {
   const [rollNo, setRollNo] = useState<string | undefined>();
   const [date, setDate] = useState<Date>(new Date());
   const [courses, setCourses] = useState<Course[]>([]);
-  const [schedule, setSchedule] = useState<{ courseName: string; time: string }[]>([]);
+  const [schedule, setSchedule] = useState<
+    { courseName: string; time: string }[]
+  >([]);
 
-  const fetchCourses = useCallback(async (rollNo: string | undefined) => {
+  const fetchCourses = useCallback(async () => {
     try {
-      if (rollNo) {
+      if (!!rollNo) {
         const response = await fetch(`/api/students/${rollNo}`);
         const res = await response.json();
 
-        if (res.error === "Student not found") {
-          await fetch("/api/students", {
-            method: "POST",
-            headers: {
-              "Content-type": "application/json",
-            },
-            body: JSON.stringify({
-              rollNo: rollNo,
-              courses: [],
-            }),
-          });
-        } else {
-          const tempCourses = await Promise.all(
-            res.courses.map(async (element: string) => {
-              const courseResponse = await fetch(`/api/courses/${element}`);
-              const courseData = await courseResponse.json();
-              return {
-                schedule: courseData.schedule,
-                courseName: courseData.courseName,
-              };
-            })
-          );
-          setCourses(tempCourses);
-        }
+        const tempCourses = await Promise.all(
+          res.courses.map(async (element: string) => {
+            const courseResponse = await fetch(`/api/courses/${element}`);
+            const courseData = await courseResponse.json();
+            return {
+              schedule: courseData.schedule,
+              courseName: courseData.courseName,
+            };
+          })
+        );
+        setCourses(tempCourses);
       }
     } catch (error) {
       console.error("Failed to fetch courses:", error);
@@ -71,17 +60,25 @@ const Page = () => {
       const email = session.user.email;
       const rollNo = email.split("@")[0];
       setRollNo(rollNo);
-      fetchCourses(rollNo);
+      fetchCourses();
     }
   }, [session, fetchCourses]);
 
-  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
 
   const getSchedule = useCallback(() => {
     const day: string = days[date.getDay()];
     const tempSchedule: { courseName: string; time: string }[] = courses
-      .filter(course => course.schedule[day]?.active === "true")
-      .map(course => ({
+      .filter((course) => course.schedule[day]?.active === "true")
+      .map((course) => ({
         courseName: course.courseName,
         time: course.schedule[day].time,
       }));
@@ -99,7 +96,7 @@ const Page = () => {
       </Typography>
       <ScheduleCalendar date={date} setDate={setDate} />
       <Paper sx={{ p: 1 }}>
-        {schedule.map(element => (
+        {schedule.map((element) => (
           <Typography variant="body1" key={element.courseName} className="px-3">
             {element.courseName}: {element.time}
           </Typography>

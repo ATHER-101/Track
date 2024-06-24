@@ -36,57 +36,61 @@ const Page = () => {
   const [emailId, setEmailId] = useState<string | undefined>();
   const [courses, setCourses] = useState<any[]>([]);
 
-  const fetchCourses = useCallback(async (emailId: string) => {
-    try {
-      const response = await fetch(`/api/professors/${emailId}`, {
-        cache: "no-store",
-      });
-      const res = await response.json();
-
-      if (res.error === "Professor not found") {
-        await fetch("/api/professors", {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-          },
-          body: JSON.stringify({
-            emailId: emailId,
-            courses: [],
-          }),
+  const fetchCourses = useCallback(async () => {
+    if (!!emailId) {
+      try {
+        const response = await fetch(`/api/professors/${emailId}`, {
+          cache: "no-store",
         });
-      } else {
-        const tempCourses = await Promise.all(
-          res.courses.map(async (course_id: string) => {
-            const courseResponse = await fetch(`/api/courses/${course_id}`, {
-              cache: "no-store",
-            });
-            const courseData = await courseResponse.json();
-            return {
-              courseId: course_id,
-              totalClasses: courseData.attendance.length,
-              courseName: courseData.courseName,
-            };
-          })
-        );
-        setCourses(tempCourses);
+        const res = await response.json();
+
+        if (!!emailId && res.error === "Professor not found") {
+          await fetch("/api/professors", {
+            method: "POST",
+            headers: {
+              "Content-type": "application/json",
+            },
+            body: JSON.stringify({
+              emailId: emailId,
+              courses: [],
+            }),
+          });
+        } else {
+          const tempCourses = await Promise.all(
+            res.courses.map(async (course_id: string) => {
+              const courseResponse = await fetch(`/api/courses/${course_id}`, {
+                cache: "no-store",
+              });
+              const courseData = await courseResponse.json();
+              return {
+                courseId: course_id,
+                totalClasses: courseData.attendance.length,
+                courseName: courseData.courseName,
+              };
+            })
+          );
+          setCourses(tempCourses);
+        }
+      } catch (error) {
+        console.error("Failed to fetch courses:", error);
       }
-    } catch (error) {
-      console.error("Failed to fetch courses:", error);
     }
-  }, []);
+  }, [emailId]);
 
   useEffect(() => {
     if (session?.user?.email) {
       const email = session.user.email;
       const emailId = email.split("@")[0];
       setEmailId(emailId);
-      fetchCourses(emailId);
     }
-  }, [session, fetchCourses]);
+  }, [session]);
+
+  useEffect(()=>{
+    fetchCourses();
+  },[emailId,fetchCourses])
 
   //Delete course
   const deleteCourse = async (course_id: String) => {
-    
     setCourses(courses.filter((course) => course.courseId !== course_id));
 
     const deletedCourse = await fetch("/api/courses", {

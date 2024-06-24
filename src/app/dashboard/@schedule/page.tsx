@@ -28,25 +28,15 @@ const Page = () => {
   const [emailId, setEmailId] = useState<string | undefined>();
   const [date, setDate] = useState<Date>(new Date());
   const [courses, setCourses] = useState<Course[]>([]);
-  const [schedule, setSchedule] = useState<{ courseName: string; time: string }[]>([]);
+  const [schedule, setSchedule] = useState<
+    { courseName: string; time: string }[]
+  >([]);
 
-  const fetchCourses = useCallback(async (emailId: string) => {
-    try {
-      const response = await fetch(`/api/professors/${emailId}`);
-      const res = await response.json();
-
-      if (res.error === "Professor not found") {
-        await fetch("/api/professors", {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-          },
-          body: JSON.stringify({
-            emailId: emailId,
-            courses: [],
-          }),
-        });
-      } else {
+  const fetchCourses = useCallback(async () => {
+    if (!!emailId) {
+      try {
+        const response = await fetch(`/api/professors/${emailId}`);
+        const res = await response.json();
         const tempCourses = await Promise.all(
           res.courses.map(async (element: string) => {
             const courseResponse = await fetch(`/api/courses/${element}`);
@@ -58,28 +48,36 @@ const Page = () => {
           })
         );
         setCourses(tempCourses);
+      } catch (error) {
+        console.error("Failed to fetch courses:", error);
       }
-    } catch (error) {
-      console.error("Failed to fetch courses:", error);
     }
-  }, []);
+  }, [emailId]);
 
   useEffect(() => {
     if (session?.user?.email) {
       const email = session.user.email;
       const emailId = email.split("@")[0];
       setEmailId(emailId);
-      fetchCourses(emailId);
+      fetchCourses();
     }
   }, [session, fetchCourses]);
 
-  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
 
   const getSchedule = useCallback(() => {
     const day: string = days[date.getDay()];
     const tempSchedule: { courseName: string; time: string }[] = courses
-      .filter(course => course.schedule[day]?.active === "true")
-      .map(course => ({
+      .filter((course) => course.schedule[day]?.active === "true")
+      .map((course) => ({
         courseName: course.courseName,
         time: course.schedule[day].time,
       }));
@@ -97,7 +95,7 @@ const Page = () => {
       </Typography>
       <ScheduleCalendar date={date} setDate={setDate} />
       <Paper sx={{ p: 1 }}>
-        {schedule.map(element => (
+        {schedule.map((element) => (
           <Typography variant="body1" key={element.courseName} className="px-3">
             {element.courseName}: {element.time}
           </Typography>
