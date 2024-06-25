@@ -23,30 +23,21 @@ const ScheduleButton = ({
   };
 
   return (
-    <>
-      <Grid container spacing={2} sx={{ my: "1px" }}>
-        <Grid item md={3} lg={2}>
+    <Box>
           <Button
             variant={active === "true" ? "contained" : "outlined"}
-            sx={{ width: "100%" }}
+            sx={{height:"40px", width:{xs: "45%", md:"20%"}, mt:1, mr:{xs:"3%",md:"1.5%"} }}
           >
             <label htmlFor={day}>{day}</label>
           </Button>
-        </Grid>
-        <input
-          id={day}
-          className="hidden"
-          type="checkbox"
-          checked={active === "true" ? true : false}
-          onChange={handleToggle}
-        />
 
-        <Grid
-          item
-          md={6}
-          lg={6}
-          className={active === "true" ? "inline-block" : "hidden"}
-        >
+          <input
+            id={day}
+            className="hidden"
+            type="checkbox"
+            checked={active === "true" ? true : false}
+            onChange={handleToggle}
+          />
           <TextField
             label="Timing"
             id="outlined-size-small"
@@ -54,12 +45,10 @@ const ScheduleButton = ({
             value={time}
             onChange={handleTimeChange}
             size="small"
-            fullWidth
+            sx={{width:{xs:"52%",md:"55%"}, mt:1, mr:{md:"23.5%"}}}
+            className={active === "true" ? "visible" : "hidden"}
           />
-          {/* </div> */}
-        </Grid>
-      </Grid>
-    </>
+    </Box>
   );
 };
 

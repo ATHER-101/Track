@@ -133,21 +133,9 @@ const Page = () => {
 
   return (
     <>
-      <Paper
-        style={{
-          padding: "16px",
-          textAlign: "center",
-          backgroundColor: "#29b6f6",
-          color: "white",
-        }}
-      >
-        <Typography variant="h5" sx={{ mb: 2 }}>
-          Courses
-        </Typography>
         <Grid container spacing={2}>
           {courses.map((course) => (
-            <Grid key={course.courseId} item xs={6} md={2.5}>
-              <Box width="100%">
+            <Grid key={course.courseId} item xs={6} md={2.4}>
                 <CourseCard
                   key={course.courseId}
                   courseId={course.courseId}
@@ -155,19 +143,18 @@ const Page = () => {
                   courseName={course.courseName}
                   onDelete={() => deleteCourse(course.courseId)}
                 />
-              </Box>
             </Grid>
           ))}
-          <Grid item xs={6} md={2.5}>
+          <Grid item xs={6} md={2.4}>
             <Paper
               sx={{
                 bgcolor: "white",
                 width: "100%",
-                height: "100%",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
               }}
+              className="h-[193.5px] dynamic-height"
             >
               <Button
                 variant="outlined"
@@ -182,7 +169,6 @@ const Page = () => {
             </Paper>
           </Grid>
         </Grid>
-      </Paper>
     </>
   );
 };

@@ -22,7 +22,7 @@ const page = async () => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
-        <Toolbar>
+        <Toolbar sx={{bgcolor:"white" , color:"#406767"}}>
           <IconButton
             size="small"
             edge="start"
@@ -34,18 +34,17 @@ const page = async () => {
               alt={session ? session?.user?.name : "User Name"}
             />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 ,my:1}}>
+          <Box sx={{ flexGrow: 1 ,my:1}}> 
+            <Typography variant="body1" component="div" sx={{p:0}}>
             {session ? session?.user?.name : "User Name"}
           </Typography>
+            <Typography variant="body2" component="div" sx={{p:0}}>
+            {session ? capitalizeString(session?.user?.role) : "Role"}
+          </Typography>
+          </Box>
+         
           <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "white",
-              color: "black",
-              "&:hover": {
-                backgroundColor: "#f0f0f0",
-              },
-            }}
+            variant="outlined"
             href="/api/auth/signout?callbackUrl=/"
           >
             LogOut
@@ -55,5 +54,9 @@ const page = async () => {
     </Box>
   );
 };
+
+function capitalizeString(str:string) {
+  return str.length > 0 ? str[0].toUpperCase() + str.slice(1) : str;
+}
 
 export default page;

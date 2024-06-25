@@ -26,30 +26,13 @@ export default function Layout({
       <Box sx={{ p: 2 }}>
         <Grid container spacing={2}>
           <Grid item xs={12} md={9}>
-            <Paper
-              style={{
-                padding: "16px",
-                textAlign: "center",
-                backgroundColor: "#29b6f6",
-                color:"white"
-              }}
-            >
               {courses}
               {/* <Suspense fallback={<div>Loading courses...</div>}>
                 <Courses />
               </Suspense> */}
-            </Paper>
           </Grid>
           <Grid item xs={12} md={3}>
-            <Paper
-              style={{
-                padding: "16px",
-                textAlign: "center",
-                backgroundColor: "#29b6f6",
-              }}
-            >
               {schedule}
-            </Paper>
           </Grid>
         </Grid>
       </Box>

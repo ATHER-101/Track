@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-// Qr Scanner
 import QrScanner from "qr-scanner";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
+import { Box, Button, Grid, Paper, TextField, Typography } from "@mui/material";
+import Overlay from "../../../../../components/Overlay";
 
 const QrReader = ({ params }: { params: { course: string } }) => {
   const { data: session } = useSession({
@@ -15,62 +15,82 @@ const QrReader = ({ params }: { params: { course: string } }) => {
     },
   });
 
-  // QR States
   const scanner = useRef<QrScanner>();
   const videoEl = useRef<HTMLVideoElement>(null);
   const qrBoxEl = useRef<HTMLDivElement>(null);
   const [qrOn, setQrOn] = useState<boolean>(true);
+  const [scannedResult, setScannedResult] = useState<string>("");
+  const [presentees, setPresentees] = useState<string[]>([]);
+  const [enrolled, setEnrolled] = useState<string[]>([]);
+  const [message, setMessage] = useState<string | null>(null);
 
-  // Result
-  const [scannedResult, setScannedResult] = useState<string | undefined>("");
-
-  // Success
   const onScanSuccess = (result: QrScanner.ScanResult) => {
-    // console.log(result);
     setScannedResult(result?.data);
+    setMessage(null);
   };
 
-  // Fail
   const onScanFail = (err: string | Error) => {
     console.log(err);
   };
 
   useEffect(() => {
-    const videoElement = videoEl.current; // Copy the ref to a local variable
+    const videoElement = videoEl.current;
 
     if (videoElement && !scanner.current) {
-      // Instantiate the QR Scanner
       scanner.current = new QrScanner(videoElement, onScanSuccess, {
         onDecodeError: onScanFail,
-        // 📷 This is the camera facing mode. In mobile devices, "environment" means back camera and "user" means front camera.
         preferredCamera: "environment",
-        // 🖼 This will help us position our "QrFrame.svg" so that user can only scan when qr code is put in between our QrFrame.svg.
-        highlightScanRegion: true,
-        // 🔥 This will produce a yellow (default color) outline around the qr code that we scan, showing a proof that our qr-scanner is scanning that qr code.
-        highlightCodeOutline: true,
-        // 📦 A custom div which will pair with "highlightScanRegion" option above 👆. This gives us full control over our scan region.
-        overlay: qrBoxEl?.current || undefined,
+        highlightScanRegion: false,
+        highlightCodeOutline: false,
+        overlay: qrBoxEl.current || undefined,
+        maxScansPerSecond: 5,
+        calculateScanRegion: (videoElement) => {
+          const sideLength =
+            0.6 * Math.min(videoElement.videoWidth, videoElement.videoHeight);
+          const x = (videoElement.videoWidth - sideLength) / 2;
+          const y = (videoElement.videoHeight - sideLength) / 2;
+
+          return {
+            x: x,
+            y: y,
+            width: sideLength,
+            height: sideLength,
+          };
+        },
       });
 
-      // 🚀 Start QR Scanner
-      scanner?.current
-        ?.start()
+      const date = getTodayDate();
+
+      fetch(`/api/courses/${params.course}`, {
+        cache: "no-store",
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          const att = response.attendance?.find((e: any) => e.date === date);
+          if (att === undefined) {
+            setPresentees([]);
+          } else {
+            setPresentees(att?.present);
+          }
+          setEnrolled(response.students);
+        })
+        .catch((error) => console.log(error));
+
+      scanner.current
+        .start()
         .then(() => setQrOn(true))
         .catch((err) => {
           if (err) setQrOn(false);
         });
     }
 
-    // 🧹 Clean up on unmount.
-    // 🚨 This removes the QR Scanner from rendering and using camera when it is closed or removed from the UI.
     return () => {
       if (!videoElement) {
-        scanner?.current?.stop();
+        scanner.current?.stop();
       }
     };
   }, []);
 
-  // ❌ If "camera" is not allowed in browser permissions, show an alert.
   useEffect(() => {
     if (!qrOn)
       alert(
@@ -88,71 +108,121 @@ const QrReader = ({ params }: { params: { course: string } }) => {
   };
 
   const courseId = params.course;
-  interface Res {
-    date: string;
-    present: string[];
-  }
-
-  const [res, setRes] = useState<Res[]>([]);
 
   const markAttendance = async () => {
     const date = getTodayDate();
-    scanner?.current?.stop();
+    // scanner.current?.stop();
 
-    console.log(JSON.stringify({ courseId, rollNo: scannedResult, date }));
+    if (!!enrolled && !enrolled.includes(scannedResult)) {
+      console.log(`${scannedResult} is not enrolled in this course!`);
+      setMessage(`${scannedResult} is not enrolled in this course!`);
+      setScannedResult("");
+    } else if (!!presentees && presentees.includes(scannedResult)) {
+      console.log(`Attendance already marked for ${scannedResult}!`);
+      setMessage(`${scannedResult} is already marked!`);
+      setScannedResult("");
+    } else if (scannedResult !== "") {
+      setMessage(null);
 
-    const response = await fetch("/api/courses", {
-      method: "PUT",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({ courseId, rollNo: scannedResult, date }),
-    });
+      const prevPresentees: string[] = presentees;
+      prevPresentees.push(scannedResult);
+      setPresentees(prevPresentees);
 
-    const r = await response.json();
-    setRes(r);
+      console.log(JSON.stringify({ courseId, rollNo: scannedResult, date }));
 
-    setScannedResult(undefined);
-    scanner?.current?.start();
+      const response = await fetch("/api/courses", {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({ courseId, rollNo: scannedResult, date }),
+      });
+
+      const res = await response.json();
+      console.log(res);
+
+      setScannedResult("");
+      // scanner.current?.start();
+    }
   };
 
   return (
-    <div className="qr-reader">
-      <div>Attendance: {params.course}</div>
-      <video ref={videoEl} className="m-3 w-[500px]"></video>
-      <div ref={qrBoxEl} className="m-3">
-        {/* <img
-          src={QrFrame}
-          alt="Qr Frame"
-          width={256}
-          height={256}
-          className="qr-frame"
-        /> */}
-      </div>
+    <Grid container spacing={2}>
+      <Grid item xs={12} md={6} className="qr-reader">
+        <Paper sx={{ p: 2 }}>
+          <Box
+            sx={{
+              position: "relative",
+              width: "100%",
+              height: 0,
+              paddingBottom: "100%", // 1:1 aspect ratio
+              overflow: "hidden",
+            }}
+          >
+            <video
+              ref={videoEl}
+              style={{
+                objectFit: "cover",
+                objectPosition: "center",
+                width: "100%",
+                height: "100%",
+                position: "absolute",
+                top: 0,
+                left: 0,
+              }}
+            ></video>
+            <Overlay/>
+          </Box>
+          {scannedResult && (
+            <>
+              <TextField
+                value={scannedResult}
+                label="Scanned Result"
+                variant="outlined"
+                fullWidth
+                size="medium"
+                InputProps={{
+                  readOnly: true,
+                  sx: {
+                    fontSize: 20, // Increase font size of the input text
+                  },
+                }}
+                InputLabelProps={{
+                  sx: {
+                    fontSize: 18, // Increase font size of the label text
+                  },
+                }}
+                sx={{ my: 2 }}
+              />
+              <Button onClick={markAttendance} variant="outlined" fullWidth>
+                Mark
+              </Button>
+            </>
+          )}
+          {message && (
+            <Button color="error" variant="outlined" fullWidth sx={{ mt: 2 }}>
+              {message}
+            </Button>
+          )}
+        </Paper>
+      </Grid>
 
-      {scannedResult && (
-        <p>
-          Scanned Result: {scannedResult}
-        </p>
-      )}
-
-      <button
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 my-1 mx-3 rounded"
-        onClick={markAttendance}
-      >
-        Mark
-      </button>
-      {res.map((i) => {
-        return (
-          <div key={i.date}>
-            <div className="mx-3 my-1 text-blue-700 text-lg font-medium">{i.date}</div>
-            {i.present.map((j, index) => (
-              <span key={index} className="mx-3 text-blue-500">{j}</span>
-            ))}
-          </div>
-        );
-      })}
-    </div>
+      <Grid item xs={12} md={6}>
+        <Paper sx={{ bgcolor: "white", width: "100%", height: "500px", p: 1 }}>
+          <Grid container spacing={1}>
+            {presentees?.map((presentee: string, index) => {
+              return (
+                <Grid key={index} item xs={4} md={4}>
+                  <Button variant="outlined" sx={{ width: "100%" }}>
+                    {presentee}
+                  </Button>
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Paper>
+      </Grid>
+    </Grid>
   );
 };
 

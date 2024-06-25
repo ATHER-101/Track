@@ -1,13 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import ScheduleButton from "@/components/scheduleButton";
 import Papa from "papaparse";
 import { redirect, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import FileUpload from "../../../../components/FileUpload";
 import { Box, Typography, Paper, Button, Grid, TextField } from "@mui/material";
-import { WidthFull } from "@mui/icons-material";
 
 const Page = () => {
   const { data: session } = useSession({
@@ -17,9 +16,7 @@ const Page = () => {
     },
   });
 
-  const email = session?.user?.email;
-  const emailId = email?.split("@")[0];
-  console.log(emailId);
+  const [emailId, setEmailId] = useState<string>();
 
   const [course, setCourse] = useState<string>("");
   const [schedule, setSchedule] = useState<{
@@ -35,6 +32,12 @@ const Page = () => {
   });
   const [file, setFile] = useState(null);
 
+  useEffect(() => {
+    const email = session?.user?.email;
+    const emailId = email?.split("@")[0];
+    setEmailId(emailId);
+  }, [session]);
+
   const handleCourseInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCourse(event.target.value);
   };
@@ -45,8 +48,6 @@ const Page = () => {
       [day]: { active, time },
     }));
   };
-
-  // const file = useRef<HTMLInputElement>(null);
 
   const router = useRouter();
 
@@ -138,22 +139,24 @@ const Page = () => {
   };
 
   return (
-    <Paper sx={{ bgcolor: "#f2eeee", p: 2 }}>
+    <Paper sx={{ bgcolor: "white", p: 2 }}>
       <Box>
         <Typography variant="h6" paddingBottom={2}>
           Add Course
         </Typography>
 
-        <Grid item sm={12} md={9} lg={8}>
-          <TextField
-            label="Course Name"
-            variant="outlined"
-            size="small"
-            value={course}
-            onChange={handleCourseInput}
-            sx={{ width: "100%" }}
-          />
-        </Grid>
+        <TextField
+          label="Course Name"
+          variant="outlined"
+          size="small"
+          value={course}
+          onChange={handleCourseInput}
+          sx={{
+            width: { xs: "100%", md: "76.5%" },
+            mb: 1,
+            mr: { md: "23.5%" },
+          }}
+        />
 
         {Object.keys(schedule).map((day) => (
           <ScheduleButton key={day} day={day} onToggle={handleToggle} />
@@ -161,48 +164,13 @@ const Page = () => {
 
         <FileUpload file={file} setFile={setFile} />
 
-        <Grid item sm={12} md={9} lg={8}>
-          <Button variant="contained" fullWidth onClick={submit}>
-            Add Course
-          </Button>
-        </Grid>
-
-        {/* <h1 className="m-2 text-xl">Add Course</h1> */}
-        {/* <label htmlFor="course" className="p-2 text-lg">
-          Course Name
-        </label>
-        <input
-          id="course"
-          className="block my-1 mx-2 border-2 border-blue-500 rounded"
-          type="text"
-          value={course}
-          onChange={handleCourseInput}
-        />
-
-        <div className="m-2 text-lg">Schedule</div>
-        {Object.keys(schedule).map((day) => (
-          <ScheduleButton key={day} day={day} onToggle={handleToggle} />
-        ))}
-
-        <label className="m-2 text-lg" htmlFor="large_size">
-          Large file input
-        </label>
-        <input
-          ref={file}
-          className="m-2 block w-full border-2 border-blue-500 rounded text-lg text-blue-500 focus:z-10 focus:border-blue-500 focus:ring-blue-500
-        file:bg-blue-500 file:hover:bg-blue-700 hover:border-blue-700 file:border-0
-        file:me-3
-        file:py-1 file:px-4 file:text-white"
-          id="large_size"
-          type="file"
-        />
-
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 my-5 mx-2 rounded"
+        <Button
+          variant="contained"
           onClick={submit}
+          sx={{ width: { xs: "100%", md: "76.5%" }, mt: 3 }}
         >
           Add Course
-        </button> */}
+        </Button>
       </Box>
     </Paper>
   );

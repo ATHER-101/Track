@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <AuthProvider>
-        <body>{children}</body>
+        <body style={{backgroundColor:"#E6F3F3"}}>{children}</body>
       </AuthProvider>
     </html>
   );

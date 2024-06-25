@@ -19,13 +19,13 @@ const StudentCourseCard = ({
 
   return (
     <>
-      <Paper sx={{ bgcolor:"#ffffff", width: "100%" }}>
-        <Typography variant="h6" sx={{pt:1}}>{courseName}</Typography>
-        <Typography variant="body1">
+      <Paper sx={{ bgcolor:"white", width: "100%", textAlign: "center" }}>
+        <Typography variant="h6" sx={{pt:1, color:"#385353"}}>{courseName}</Typography>
+        <Typography variant="body1" sx={{color:"#385353"}}>
           Attendance: {totalAttendance}/{totalClasses}
         </Typography>
-        <Typography variant="body2" fontSize={20}>
-          {totalAttendance / 40}%
+        <Typography variant="body1" sx={{color:"#385353"}}>
+          Percentage: {totalAttendance / 40}%
         </Typography>
         <Button
           variant="contained"

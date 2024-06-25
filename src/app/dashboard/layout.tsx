@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import { Grid, Paper, Typography} from "@mui/material";
+import { Grid} from "@mui/material";
 
 export const metadata = {
   title: "Next.js",
@@ -24,15 +24,7 @@ export default function Layout({
             {courses}
           </Grid>
           <Grid item xs={12} md={3}>
-            <Paper
-              style={{
-                padding: "16px",
-                textAlign: "center",
-                backgroundColor: "#29b6f6",
-              }}
-            >
               {schedule}
-            </Paper>
           </Grid>
         </Grid>
       </Box>

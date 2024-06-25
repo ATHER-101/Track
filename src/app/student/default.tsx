@@ -22,7 +22,7 @@ export default async function Page() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
-        <Toolbar sx={{bgcolor:"#0288d1"}}>
+        <Toolbar sx={{bgcolor:"white" , color:"#406767"}}>
           <IconButton
             size="small"
             edge="start"
@@ -35,18 +35,17 @@ export default async function Page() {
               src="/static/images/avatar/1.jpg"
             />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1,my:1}}>
+          <Box sx={{ flexGrow: 1 ,my:1}}> 
+            <Typography variant="body1" component="div" sx={{p:0}}>
             {session ? session?.user?.name : "User Name"}
           </Typography>
+            <Typography variant="body2" component="div" sx={{p:0}}>
+            {session ? capitalizeString(session?.user?.role) : "Role"}
+          </Typography>
+          </Box>
+         
           <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "#f8f8f8",
-              color: "black",
-              "&:hover": {
-                backgroundColor: "#f4f1f1",
-              },
-            }}
+            variant="outlined"
             href="/api/auth/signout?callbackUrl=/"
           >
             LogOut
@@ -55,4 +54,8 @@ export default async function Page() {
       </AppBar>
     </Box>
   );
+}
+
+function capitalizeString(str:string) {
+  return str.length > 0 ? str[0].toUpperCase() + str.slice(1) : str;
 }

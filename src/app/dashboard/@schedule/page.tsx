@@ -76,7 +76,7 @@ const Page = () => {
   const getSchedule = useCallback(() => {
     const day: string = days[date.getDay()];
     const tempSchedule: { courseName: string; time: string }[] = courses
-      .filter((course) => course.schedule[day]?.active === "true")
+      .filter((course) => course.schedule && course.schedule[day]?.active === "true")
       .map((course) => ({
         courseName: course.courseName,
         time: course.schedule[day].time,
@@ -90,9 +90,6 @@ const Page = () => {
 
   return (
     <Box width="100%">
-      <Typography variant="h5" sx={{ mb: 2, color: "white" }}>
-        Schedule
-      </Typography>
       <ScheduleCalendar date={date} setDate={setDate} />
       <Paper sx={{ p: 1 }}>
         {schedule.map((element) => (
@@ -100,7 +97,11 @@ const Page = () => {
             {element.courseName}: {element.time}
           </Typography>
         ))}
-        {schedule.length === 0 && "No classes today!"}
+        {schedule.length === 0 && (
+          <Typography variant="body1" className="px-3">
+            No classes Today!
+          </Typography>
+        )}
       </Paper>
     </Box>
   );

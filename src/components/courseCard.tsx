@@ -13,9 +13,9 @@ interface Props {
 const CourseCard = ({ courseName, courseId, totalClasses, onDelete }: Props) => {
 
   return (
-    <Paper sx={{ bgcolor:"#ffffff", width: "100%" }}>
-        <Typography variant="h6" sx={{pt:1}}>{courseName}</Typography>
-        <Typography variant="body1">
+    <Paper sx={{ bgcolor:"white", width: "100%", textAlign: "center"}}>
+        <Typography variant="h6" sx={{pt:1, color:"#385353"}}>{courseName}</Typography>
+        <Typography variant="body1" sx={{color:"#385353"}}>
         {String(totalClasses)} {totalClasses===1?"class":"classes"} till now
         </Typography>
         
