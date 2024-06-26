@@ -198,29 +198,27 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
     data && (
       <>
         <Grid container spacing={2}>
-          <Grid item sm={6} md={6} lg={6}>
+          <Grid item xs={12} md={6}>
             <Button
               fullWidth
               variant="contained"
               href={`/dashboard/${params.course}/attendance`}
-              sx={{ mb: 2 }}
             >
               Mark Attendance
             </Button>
           </Grid>
-          <Grid item sm={6} md={6} lg={6}>
+          <Grid item xs={12} md={6}>
             <Button
               fullWidth
               variant="contained"
               onClick={handleDownload}
-              sx={{ mb: 2 }}
             >
               Download Attendance as Excel
             </Button>
           </Grid>
         </Grid>
 
-        <Paper sx={{ borderRadius: "6px", mt: 2 }}>
+        <Paper sx={{ borderRadius: "6px", mt: 3 }}>
           <TableContainer
             sx={{ maxHeight: 440, width: "100%", borderRadius: "6px" }}
           >

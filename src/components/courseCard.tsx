@@ -1,35 +1,64 @@
-import Box from "@mui/material/Box";
-import { Button, Paper, Typography } from "@mui/material";
-
-import Link from "next/link";
+import { Box, Button, Paper, Typography } from "@mui/material";
 
 interface Props {
   courseName: String;
   courseId: String;
-  totalClasses:Number;
+  totalClasses: Number;
   onDelete: () => void;
 }
 
-const CourseCard = ({ courseName, courseId, totalClasses, onDelete }: Props) => {
-
+const CourseCard = ({
+  courseName,
+  courseId,
+  totalClasses,
+  onDelete,
+}: Props) => {
   return (
-    <Paper sx={{ bgcolor:"white", width: "100%", textAlign: "center"}}>
-        <Typography variant="h6" sx={{pt:1, color:"#385353"}}>{courseName}</Typography>
-        <Typography variant="body1" sx={{color:"#385353"}}>
-        {String(totalClasses)} {totalClasses===1?"class":"classes"} till now
+    <Paper
+      sx={{
+        bgcolor: "white",
+        width: "100%",
+        height: "100%",
+        textAlign: "center",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
+    >
+      <Box
+        sx={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Typography variant="h6" sx={{ pt: 1, color: "#385353" }}>
+          {courseName}
         </Typography>
-        
+        <Typography variant="body1" sx={{ color: "#385353" }}>
+          {String(totalClasses)} {totalClasses === 1 ? "class" : "classes"} till
+          now
+        </Typography>
+      </Box>
+      <Box>
         <Button
           variant="contained"
           href={`/dashboard/${courseId}`}
-          sx={{ mt: 1, width:"85%" }}
-        >Attendance</Button>
+          sx={{ mt: 1, width: "85%" }}
+        >
+          Attendance
+        </Button>
         <Button
           variant="outlined"
           onClick={onDelete}
-          sx={{ mb:2,mt:1,width:"85%" }}
-        >Delete Course</Button>
-      </Paper>
+          sx={{ mb: 2, mt: 1, width: "85%" }}
+        >
+          Delete
+        </Button>
+      </Box>
+    </Paper>
   );
 };
 

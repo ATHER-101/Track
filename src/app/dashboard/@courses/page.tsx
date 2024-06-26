@@ -85,9 +85,9 @@ const Page = () => {
     }
   }, [session]);
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchCourses();
-  },[emailId,fetchCourses])
+  }, [emailId, fetchCourses]);
 
   //Delete course
   const deleteCourse = async (course_id: String) => {
@@ -133,42 +133,29 @@ const Page = () => {
 
   return (
     <>
-        <Grid container spacing={2}>
-          {courses.map((course) => (
-            <Grid key={course.courseId} item xs={6} md={2.4}>
-                <CourseCard
-                  key={course.courseId}
-                  courseId={course.courseId}
-                  totalClasses={course.totalClasses}
-                  courseName={course.courseName}
-                  onDelete={() => deleteCourse(course.courseId)}
-                />
-            </Grid>
-          ))}
-          <Grid item xs={6} md={2.4}>
-            <Paper
-              sx={{
-                bgcolor: "white",
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              className="h-[193.5px] dynamic-height"
-            >
-              <Button
-                variant="outlined"
-                href="/dashboard/add-course"
-                sx={{ border: 1, height: "80%", width: "80%" }}
-              >
-                <SvgIcon
-                  component={PlusIcon}
-                  style={{ width: 100, height: 100 }}
-                />
-              </Button>
-            </Paper>
+      <Grid container spacing={2}>
+        {courses.map((course) => (
+          <Grid key={course.courseId} item xs={6} md={2.4}>
+            <CourseCard
+              key={course.courseId}
+              courseId={course.courseId}
+              totalClasses={course.totalClasses}
+              courseName={course.courseName}
+              onDelete={() => deleteCourse(course.courseId)}
+            />
           </Grid>
-        </Grid>
+        ))}
+      </Grid>
+      <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+        <Button
+          variant="contained"
+          href="/dashboard/add-course"
+          sx={{ width: "100%", my: 2 }}
+          startIcon={<PlusIcon />}
+        >
+          Add Course
+        </Button>
+      </Grid>
     </>
   );
 };
