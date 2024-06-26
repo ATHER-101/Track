@@ -23,6 +23,7 @@ const CourseCard = ({
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
+        p:2
       }}
     >
       <Box
@@ -46,14 +47,14 @@ const CourseCard = ({
         <Button
           variant="contained"
           href={`/dashboard/${courseId}`}
-          sx={{ mt: 1, width: "85%" }}
+          sx={{ mt: 1, width: "100%" }}
         >
           Attendance
         </Button>
         <Button
           variant="outlined"
           onClick={onDelete}
-          sx={{ mb: 2, mt: 1, width: "85%" }}
+          sx={{ mt: 1, width: "100%" }}
         >
           Delete
         </Button>

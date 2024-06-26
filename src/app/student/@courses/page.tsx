@@ -91,7 +91,7 @@ const Page = () => {
           {courses.map((course: any) => {
             return (
               <Grid key={course.courseId} item xs={6} md={2.4}>
-                <Box width="100%">
+                <Box width="100%" height="100%">
                   <StudentCourseCard
                     key={course.courseId}
                     courseId={course.courseId}
