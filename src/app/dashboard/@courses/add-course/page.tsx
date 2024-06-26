@@ -6,7 +6,9 @@ import Papa from "papaparse";
 import { redirect, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import FileUpload from "../../../../components/FileUpload";
-import { Box, Typography, Paper, Button, Grid, TextField } from "@mui/material";
+import { Box, Paper, Button, TextField, Skeleton, Grid } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
+import SaveIcon from "@mui/icons-material/Save";
 
 const Page = () => {
   const { data: session } = useSession({
@@ -15,6 +17,9 @@ const Page = () => {
       redirect("/signIn");
     },
   });
+
+  const [loading, setLoading] = useState<boolean>(true);
+  const [submiting, setSubmiting] = useState<boolean>(false);
 
   const [emailId, setEmailId] = useState<string>();
 
@@ -36,6 +41,7 @@ const Page = () => {
     const email = session?.user?.email;
     const emailId = email?.split("@")[0];
     setEmailId(emailId);
+    setLoading(false);
   }, [session]);
 
   const handleCourseInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +58,7 @@ const Page = () => {
   const router = useRouter();
 
   const submit = async () => {
+    setSubmiting(true);
     const timePattern =
       /^(0?[1-9]|1[0-2]):[0-5][0-9]\s*-\s*(0?[1-9]|1[0-2]):[0-5][0-9]$/;
 
@@ -64,10 +71,12 @@ const Page = () => {
 
     if (course === "") {
       console.warn("Please give course name!");
+      setSubmiting(false);
     } else if (invalidDays.length > 0) {
       console.warn(
         `Please give correct course timings for ${invalidDays.join(", ")}`
       );
+      setSubmiting(false);
     } else {
       const csvFile = file;
 
@@ -76,7 +85,7 @@ const Page = () => {
           header: false,
           complete: async (result) => {
             const students: string[] = [];
-            const data = result.data as string[][]; // Explicitly typing the result data
+            const data = result.data as string[][];
 
             data.forEach((i) => {
               students.push(i[0]);
@@ -130,48 +139,107 @@ const Page = () => {
             console.log(professorRes);
 
             router.back();
+            setSubmiting(false);
           },
         });
       } else {
         console.error("No file selected");
+        setSubmiting(false);
       }
     }
   };
 
   return (
     <Paper sx={{ bgcolor: "white", p: 2 }}>
-      <Box>
-        <Typography variant="h6" paddingBottom={2}>
-          Add Course
-        </Typography>
+      <Grid item xs={12} md={8}>
+        {loading || submiting ? (
+          <Skeleton
+            variant="rounded"
+            sx={{
+              width: "100%",
+              height: "40px",
+              mb: 2,
+            }}
+          />
+        ) : (
+          <TextField
+            label="Course Name"
+            variant="outlined"
+            size="small"
+            value={course}
+            onChange={handleCourseInput}
+            sx={{
+              width: "100%",
+              mb: 1,
+            }}
+          />
+        )}
+      </Grid>
 
-        <TextField
-          label="Course Name"
-          variant="outlined"
-          size="small"
-          value={course}
-          onChange={handleCourseInput}
-          sx={{
-            width: { xs: "100%", md: "76.5%" },
-            mb: 1,
-            mr: { md: "23.5%" },
-          }}
-        />
+      {Object.keys(schedule).map((day) =>
+        loading ? (
+          <Grid key={day} item xs={6} md={3}>
+            <Skeleton
+              
+              variant="rounded"
+              sx={{
+                width: "100%",
+                height: "40px",
+                mb: 1,
+              }}
+            />
+          </Grid>
+        ) : (
+          <ScheduleButton key={day} day={day} onToggle={handleToggle} submiting={submiting} />
+        )
+      )}
 
-        {Object.keys(schedule).map((day) => (
-          <ScheduleButton key={day} day={day} onToggle={handleToggle} />
-        ))}
+      {loading ? (
+        <Grid item xs={6} md={3}>
+          <Skeleton
+            variant="rounded"
+            sx={{
+              width: "100%",
+              height: "40px",
+              mt: 2,
+            }}
+          />
+        </Grid>
+      ) : (
+        <FileUpload file={file} setFile={setFile} submiting={submiting} />
+      )}
 
-        <FileUpload file={file} setFile={setFile} />
-
-        <Button
-          variant="contained"
-          onClick={submit}
-          sx={{ width: { xs: "100%", md: "76.5%" }, mt: 3 }}
-        >
-          Add Course
-        </Button>
-      </Box>
+      <Grid item xs={12} md={8}>
+        {loading ? (
+          <Skeleton
+            variant="rounded"
+            sx={{
+              width: "100%",
+              height: "40px",
+              mb: 2,
+              mt: 3,
+            }}
+          />
+        ) : submiting ? (
+          <LoadingButton
+            loading
+            loadingPosition="center"
+            startIcon={<SaveIcon />}
+            variant="contained"
+            sx={{ width: "100%", mt: 3 }}
+          >
+            Save
+          </LoadingButton>
+        ) : (
+          <Button
+            variant="contained"
+            onClick={submit}
+            sx={{ width: "100%", mt: 3 }}
+          >
+            Add Course
+          </Button>
+        )}
+      </Grid>
     </Paper>
   );
 };

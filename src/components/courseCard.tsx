@@ -1,9 +1,10 @@
-import { Box, Button, Paper, Typography } from "@mui/material";
+import { Box, Button, Paper, Skeleton, Typography } from "@mui/material";
 
 interface Props {
   courseName: String;
   courseId: String;
   totalClasses: Number;
+  loading: boolean;
   onDelete: () => void;
 }
 
@@ -11,6 +12,7 @@ const CourseCard = ({
   courseName,
   courseId,
   totalClasses,
+  loading,
   onDelete,
 }: Props) => {
   return (
@@ -23,7 +25,7 @@ const CourseCard = ({
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        p:2
+        p: 2,
       }}
     >
       <Box
@@ -35,29 +37,64 @@ const CourseCard = ({
           justifyContent: "center",
         }}
       >
-        <Typography variant="h6" sx={{ pt: 1, color: "#385353" }}>
-          {courseName}
-        </Typography>
-        <Typography variant="body1" sx={{ color: "#385353" }}>
-          {String(totalClasses)} {totalClasses === 1 ? "class" : "classes"} till
-          now
-        </Typography>
+        {loading ? (
+          <>
+            <Skeleton width="100%" height={20} sx={{ mt: 1 }} />
+            <Skeleton width="60%" height={20} />
+          </>
+        ) : (
+          <Typography variant="h6" sx={{ pt: 1, color: "#385353" }}>
+            {courseName}
+          </Typography>
+        )}
+        {loading ? (
+          <>
+            <Skeleton width="70%" height={10} sx={{ mt: 1.5 }} />
+          </>
+        ) : (
+          <Typography variant="body1" sx={{ color: "#385353" }}>
+            {String(totalClasses)} {totalClasses === 1 ? "class" : "classes"}{" "}
+            till now
+          </Typography>
+        )}
       </Box>
       <Box>
-        <Button
-          variant="contained"
-          href={`/dashboard/${courseId}`}
-          sx={{ mt: 1, width: "100%" }}
-        >
-          Attendance
-        </Button>
-        <Button
-          variant="outlined"
-          onClick={onDelete}
-          sx={{ mt: 1, width: "100%" }}
-        >
-          Delete
-        </Button>
+        {loading ? (
+          <>
+            <Skeleton
+              variant="rounded"
+              width="100%"
+              height={35}
+              sx={{ mt: 1.5 }}
+            />
+          </>
+        ) : (
+          <Button
+            variant="contained"
+            href={`/dashboard/${courseId}`}
+            sx={{ mt: 1, width: "100%" }}
+          >
+            Attendance
+          </Button>
+        )}
+        {loading ? (
+          <>
+            <Skeleton
+              variant="rounded"
+              width="100%"
+              height={35}
+              sx={{ mt: 1.5 }}
+            />
+          </>
+        ) : (
+          <Button
+            variant="outlined"
+            onClick={onDelete}
+            sx={{ mt: 1, width: "100%" }}
+          >
+            Delete
+          </Button>
+        )}
       </Box>
     </Paper>
   );

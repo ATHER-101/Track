@@ -3,6 +3,7 @@
 import {
   Button,
   Paper,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -14,7 +15,6 @@ import {
 
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 
 const DownloadButton = ({ params }: { params: { course: string } }) => {
@@ -24,6 +24,8 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
       redirect("/signIn");
     },
   });
+
+  const [loading, setLoading] = useState<boolean>(true);
 
   const [rollNo, setRollNo] = useState<string | undefined>();
 
@@ -53,6 +55,7 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
           });
 
           setData(tempData);
+          setLoading(false);
         } else {
           console.error(
             "Attendance data is not in expected format:",
@@ -92,13 +95,11 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
     }
   };
 
-  const wait = () => {
-    console.log(data);
-  };
-
   return (
-    data && (
-      <>
+    <>
+      {loading ? (
+        <Skeleton variant="rounded" width="100%" height={40} />
+      ) : (
         <Button
           fullWidth
           variant="contained"
@@ -107,6 +108,11 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
         >
           Download Attendance Record as Excel
         </Button>
+      )}
+
+      {loading ? (
+        <Skeleton variant="rounded" width="100%" height={"92px"} sx={{ mt: 2 }} />
+      ) : (
         <Paper sx={{ borderRadius: "6px" }}>
           <TableContainer
             sx={{ maxHeight: 440, width: "100%", borderRadius: "6px" }}
@@ -142,8 +148,8 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
             </Table>
           </TableContainer>
         </Paper>
-      </>
-    )
+      )}
+    </>
   );
 };
 

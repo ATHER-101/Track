@@ -33,8 +33,11 @@ const Page = () => {
     },
   });
 
+  const [loading, setLoading] = useState<boolean>(true);
+
   const [emailId, setEmailId] = useState<string | undefined>();
-  const [courses, setCourses] = useState<any[]>([]);
+
+  const [courses, setCourses] = useState<any[]>([0, 1, 2, 3]);
 
   const fetchCourses = useCallback(async () => {
     if (!!emailId) {
@@ -70,6 +73,7 @@ const Page = () => {
             })
           );
           setCourses(tempCourses);
+          setLoading(false);
         }
       } catch (error) {
         console.error("Failed to fetch courses:", error);
@@ -134,19 +138,20 @@ const Page = () => {
   return (
     <>
       <Grid container spacing={2}>
-        {courses.map((course) => (
-          <Grid key={course.courseId} item xs={6} md={2.4}>
+        {courses.map((course: any,index) => (
+          <Grid key={index} item xs={6} sm={6} md={4} lg={2.4}>
             <CourseCard
               key={course.courseId}
               courseId={course.courseId}
               totalClasses={course.totalClasses}
               courseName={course.courseName}
+              loading={loading}
               onDelete={() => deleteCourse(course.courseId)}
             />
           </Grid>
         ))}
       </Grid>
-      <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+      {!loading && <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
         <Button
           variant="contained"
           href="/dashboard/add-course"
@@ -155,7 +160,7 @@ const Page = () => {
         >
           Add Course
         </Button>
-      </Grid>
+      </Grid>}
     </>
   );
 };

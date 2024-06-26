@@ -4,7 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import QrScanner from "qr-scanner";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import { Box, Button, Grid, Paper, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  Paper,
+  Skeleton,
+  TextField,
+  Typography,
+} from "@mui/material";
 import Overlay from "../../../../../components/Overlay";
 
 const QrReader = ({ params }: { params: { course: string } }) => {
@@ -23,6 +31,7 @@ const QrReader = ({ params }: { params: { course: string } }) => {
   const [presentees, setPresentees] = useState<string[]>([]);
   const [enrolled, setEnrolled] = useState<string[]>([]);
   const [message, setMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const onScanSuccess = (result: QrScanner.ScanResult) => {
     setScannedResult(result?.data);
@@ -76,6 +85,8 @@ const QrReader = ({ params }: { params: { course: string } }) => {
         })
         .catch((error) => console.log(error));
 
+      setLoading(false);
+
       scanner.current
         .start()
         .then(() => setQrOn(true))
@@ -124,9 +135,7 @@ const QrReader = ({ params }: { params: { course: string } }) => {
     } else if (scannedResult !== "") {
       setMessage(null);
 
-      const prevPresentees: string[] = presentees;
-      prevPresentees.push(scannedResult);
-      setPresentees(prevPresentees);
+      setPresentees([scannedResult, ...presentees]);
 
       console.log(JSON.stringify({ courseId, rollNo: scannedResult, date }));
 
@@ -171,7 +180,7 @@ const QrReader = ({ params }: { params: { course: string } }) => {
                 left: 0,
               }}
             ></video>
-            <Overlay/>
+            <Overlay />
           </Box>
           {scannedResult && (
             <>
@@ -208,19 +217,28 @@ const QrReader = ({ params }: { params: { course: string } }) => {
       </Grid>
 
       <Grid item xs={12} md={6}>
-        <Paper sx={{ bgcolor: "white", width: "100%", height: "500px", p: 1 }}>
-          <Grid container spacing={1}>
-            {presentees?.map((presentee: string, index) => {
-              return (
-                <Grid key={index} item xs={4} md={4}>
-                  <Button variant="outlined" sx={{ width: "100%" }}>
-                    {presentee}
-                  </Button>
-                </Grid>
-              );
-            })}
-          </Grid>
-        </Paper>
+        {loading ? (
+          <Skeleton
+            variant="rounded"
+            sx={{bgcolor: "white", width: "100%", minHeight: "100%" }}
+          />
+        ) : (
+          <Paper
+            sx={{ bgcolor: "white", width: "100%", minHeight: "100%", p: 1 }}
+          >
+            <Grid container spacing={1}>
+              {presentees?.map((presentee: string, index) => {
+                return (
+                  <Grid key={index} item xs={4} md={4}>
+                    <Button variant="outlined" sx={{ width: "100%" }}>
+                      {presentee}
+                    </Button>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </Paper>
+        )}
       </Grid>
     </Grid>
   );

@@ -1,103 +1,10 @@
-// "use client";
-
-// import Link from "next/link";
-// import { useSession } from "next-auth/react";
-// import { redirect } from "next/navigation";
-// import { useRouter } from "next/navigation";
-// import React, { useEffect, useState } from "react";
-
-// const Page = ({ params }: { params: { course: string } }) => {
-//   const { data: session } = useSession({
-//     required: true,
-//     onUnauthenticated() {
-//       redirect("/signIn");
-//     },
-//   });
-
-//   const [data, setData] = useState<any[] | undefined>(undefined);
-
-//   const router = useRouter();
-
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       const response = await fetch(`/api/courses/${params.course}`);
-//       const res = await response.json();
-
-//       let arr = res.students;
-//       const tempData: any[] = [[""]];
-//       arr.forEach((element: string) => {
-//         tempData.push([element]);
-//       });
-
-//       const attendance = res.attendance;
-//       attendance.map((period: { date: string; present: [] }) => {
-//         tempData[0].push(period.date);
-//         for (let index = 0; index < arr.length; index++) {
-//           let rollNo = arr[index];
-//           if (
-//             period.present.find((element: any) => element === rollNo) !==
-//             undefined
-//           ) {
-//             tempData[index+1].push("Present");
-//           } else {
-//             tempData[index+1].push("Absent");
-//           }
-
-//         }
-//       });
-
-//       setData(tempData);
-//     };
-//     fetchData();
-//   }, []);
-
-//   const handleDownload = async () => {
-//     if (data !== undefined) {
-//       const csvContent = data.map((row) => row.join(",")).join("\n");
-//       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
-//       const url = window.URL.createObjectURL(blob);
-
-//       const hiddenLink = document.createElement("a");
-//       hiddenLink.href = url;
-//       hiddenLink.download = `attendance.csv`;
-//       hiddenLink.click();
-
-//       window.URL.revokeObjectURL(url);
-
-//       router.push("/dashboard");
-//     }
-//   };
-
-//   const wait = () => {
-//     console.log(data);
-//   };
-
-//   return (
-//     <>
-//       <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold m-4 p-2 rounded">
-//         <Link href={`/dashboard/${params.course}/attendance`}>
-//           Mark Attendance
-//         </Link>
-//       </button>
-
-//       <button
-//         onClick={data !== undefined ? handleDownload : wait}
-//         className="bg-blue-500 hover:bg-blue-700 text-white font-bold m-4 p-2 rounded"
-//       >
-//         Download Attendance Record
-//       </button>
-//     </>
-//   );
-// };
-
-// export default Page;
-
 "use client";
 
 import {
   Button,
   Grid,
   Paper,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -119,6 +26,8 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
       redirect("/signIn");
     },
   });
+
+  const [loading, setLoading] = useState<boolean>(true);
 
   const [emailId, setEmailId] = useState<string | undefined>();
 
@@ -155,6 +64,7 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
           });
 
           setData(tempData);
+          setLoading(false);
         } else {
           console.error(
             "Attendance data is not in expected format:",
@@ -195,29 +105,40 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
   };
 
   return (
-    data && (
-      <>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
-            <Button
-              fullWidth
-              variant="contained"
-              href={`/dashboard/${params.course}/attendance`}
-            >
-              Mark Attendance
-            </Button>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Button
-              fullWidth
-              variant="contained"
-              onClick={handleDownload}
-            >
+    <>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>
+          <Button
+            fullWidth
+            variant="contained"
+            href={`/dashboard/${params.course}/attendance`}
+          >
+            Mark Attendance
+          </Button>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          {loading ? (
+            <Skeleton
+              variant="rounded"
+              width="100%"
+              height={40}
+            />
+          ) : (
+            <Button fullWidth variant="contained" onClick={handleDownload}>
               Download Attendance as Excel
             </Button>
-          </Grid>
+          )}
         </Grid>
+      </Grid>
 
+      {loading ? (
+        <Skeleton
+          variant="rounded"
+          width="100%"
+          height={440}
+          sx={{ mt: 2 }}
+        />
+      ) : (
         <Paper sx={{ borderRadius: "6px", mt: 3 }}>
           <TableContainer
             sx={{ maxHeight: 440, width: "100%", borderRadius: "6px" }}
@@ -268,8 +189,8 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
             </Table>
           </TableContainer>
         </Paper>
-      </>
-    )
+      )}
+    </>
   );
 };
 

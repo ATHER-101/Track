@@ -1,7 +1,6 @@
 "use client";
 
-import Box from "@mui/material/Box";
-import { Grid, Typography } from "@mui/material";
+import { Grid, Typography, Skeleton, Paper, Box } from "@mui/material";
 
 import StudentCourseCard from "@/components/studentCourseCard";
 import { useSession } from "next-auth/react";
@@ -16,9 +15,11 @@ const Page = () => {
     },
   });
 
+  const [loading, setLoading] = useState<boolean>(true);
+
   const [rollNo, setRollNo] = useState<string | undefined>();
 
-  const [courses, setCourses] = useState<any[]>([]);
+  const [courses, setCourses] = useState<any[]>([0, 1, 2, 3]);
 
   const fetchCourses = useCallback(async () => {
     if (!!rollNo) {
@@ -66,6 +67,7 @@ const Page = () => {
             })
           );
           setCourses(tempCourses);
+          setLoading(false);
         }
       } catch (error) {
         console.error("Failed to fetch courses:", error);
@@ -81,29 +83,28 @@ const Page = () => {
     }
   }, [session]);
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchCourses();
-  },[rollNo,fetchCourses])
+  }, [rollNo, fetchCourses]);
 
   return (
     <>
-        <Grid container spacing={2}>
-          {courses.map((course: any) => {
-            return (
-              <Grid key={course.courseId} item xs={6} md={2.4}>
-                <Box width="100%" height="100%">
-                  <StudentCourseCard
-                    key={course.courseId}
-                    courseId={course.courseId}
-                    totalAttendance={course.totalAttendance}
-                    totalClasses={course.totalClasses}
-                    courseName={course.courseName}
-                  />
-                </Box>
-              </Grid>
-            );
-          })}
-        </Grid>
+      <Grid container spacing={2}>
+        {courses.map((course: any,index) => (
+          <Grid key={index} item xs={6} sm={6} md={4} lg={2.4}>
+            <Box width="100%" height="100%">
+              <StudentCourseCard
+                key={course.courseId}
+                courseId={course.courseId}
+                totalAttendance={course.totalAttendance}
+                totalClasses={course.totalClasses}
+                courseName={course.courseName}
+                loading={loading}
+              />
+            </Box>
+          </Grid>
+        ))}
+      </Grid>
     </>
   );
 };

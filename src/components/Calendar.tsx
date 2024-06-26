@@ -1,33 +1,29 @@
-"use client";
+import dayjs, { Dayjs } from "dayjs";
+import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 
-import Calendar from "react-calendar";
-import styles from './Calendar.module.css';
-import 'react-calendar/dist/Calendar.css';
-
-const ScheduleCalendar = ({date,setDate}:{date:Date,setDate:any}) => {
-
-  const onChange = (date: any) => {
-    setDate(date);
-  };
-
-  const minDate = new Date(2024, 0, 1); // January 1, 2023
-  const maxDate = new Date(2024, 11, 31); // December 31, 2023
-
+export default function DateCalendarValue({
+  date,
+  setDate,
+}: {
+  date: Dayjs;
+  setDate: any;
+}) {
   return (
-    <div className={styles.calendarContainer}>
-      <Calendar
-        onChange={onChange}
-        value={date}
-        view="month"
-        maxDetail="month"
-        minDate={minDate}
-        maxDate={maxDate}
-        next2Label={null}
-        prev2Label={null}
-        className={styles.reactCalendar}
-      />
-    </div>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <DemoContainer components={["DateCalendar", "DateCalendar"]}>
+        <DemoItem>
+          <DateCalendar
+            views={["day"]}
+            defaultValue={dayjs()}
+            value={date}
+            onChange={(newValue) => setDate(newValue)}
+            sx={{bgcolor:"#d6dfea", borderRadius:1}}
+          />
+        </DemoItem>
+      </DemoContainer>
+    </LocalizationProvider>
   );
-};
-
-export default ScheduleCalendar;
+}

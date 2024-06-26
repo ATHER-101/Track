@@ -22,7 +22,7 @@ export default async function Page() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
-        <Toolbar sx={{bgcolor:"white" , color:"#406767"}}>
+        <Toolbar sx={{bgcolor:"white" , color:"#2F4040"}}>
           <IconButton
             size="small"
             edge="start"
