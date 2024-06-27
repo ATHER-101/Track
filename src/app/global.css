@@ -7,27 +7,3 @@
     @apply h-[169px];
   }
 }
-
-.css-1rv8zyt-MuiStack-root {
-  padding-top: 0;
-  width: 100%;
-}
-
-.css-1aqny2q-MuiPickersCalendarHeader-root {
-  padding-top: 4px;
-  margin-top: 0;
-  margin-bottom: 0px;
-  background-color: #e8edf3;
-  width: 100%;
-}
-
-.css-27kgh5-MuiDateCalendar-root {
-  height: 320px;
-  background-color: #f5f5f5;
-  width: 100%;
-}
-
-.css-i5q14k-MuiDayCalendar-header {
-  background-color: #d6deea;
-  width: 100%;
-}

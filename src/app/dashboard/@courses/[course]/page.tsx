@@ -122,6 +122,7 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
               variant="rounded"
               width="100%"
               height={40}
+              sx={{bgcolor:"white"}}
             />
           ) : (
             <Button fullWidth variant="contained" onClick={handleDownload}>
@@ -136,7 +137,7 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
           variant="rounded"
           width="100%"
           height={440}
-          sx={{ mt: 2 }}
+          sx={{ mt: 2, bgcolor:"white" }}
         />
       ) : (
         <Paper sx={{ borderRadius: "6px", mt: 3 }}>

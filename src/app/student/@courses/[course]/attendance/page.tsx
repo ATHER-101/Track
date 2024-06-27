@@ -98,7 +98,7 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
   return (
     <>
       {loading ? (
-        <Skeleton variant="rounded" width="100%" height={40} />
+        <Skeleton variant="rounded" width="100%" height={40} sx={{bgcolor:"white" }}/>
       ) : (
         <Button
           fullWidth
@@ -111,7 +111,7 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
       )}
 
       {loading ? (
-        <Skeleton variant="rounded" width="100%" height={"92px"} sx={{ mt: 2 }} />
+        <Skeleton variant="rounded" width="100%" height={"92px"} sx={{ mt: 2, bgcolor:"white" }} />
       ) : (
         <Paper sx={{ borderRadius: "6px" }}>
           <TableContainer
