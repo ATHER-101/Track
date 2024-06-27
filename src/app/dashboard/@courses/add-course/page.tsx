@@ -19,6 +19,7 @@ const Page = () => {
   });
 
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [submiting, setSubmiting] = useState<boolean>(false);
 
   const [emailId, setEmailId] = useState<string>();
@@ -70,10 +71,10 @@ const Page = () => {
       .map(([day]) => day);
 
     if (course === "") {
-      console.warn("Please give course name!");
+      setError("Name cannot be empty!");
       setSubmiting(false);
     } else if (invalidDays.length > 0) {
-      console.warn(
+      setError(
         `Please give correct course timings for ${invalidDays.join(", ")}`
       );
       setSubmiting(false);
@@ -81,6 +82,7 @@ const Page = () => {
       const csvFile = file;
 
       if (csvFile !== null) {
+        setError(null);
         Papa.parse(csvFile, {
           header: false,
           complete: async (result) => {
@@ -143,7 +145,7 @@ const Page = () => {
           },
         });
       } else {
-        console.error("No file selected");
+        setError("No file selected!");
         setSubmiting(false);
       }
     }
@@ -180,7 +182,6 @@ const Page = () => {
         loading ? (
           <Grid key={day} item xs={6} md={3}>
             <Skeleton
-              
               variant="rounded"
               sx={{
                 width: "100%",
@@ -190,7 +191,12 @@ const Page = () => {
             />
           </Grid>
         ) : (
-          <ScheduleButton key={day} day={day} onToggle={handleToggle} submiting={submiting} />
+          <ScheduleButton
+            key={day}
+            day={day}
+            onToggle={handleToggle}
+            submiting={submiting}
+          />
         )
       )}
 
@@ -237,6 +243,20 @@ const Page = () => {
             sx={{ width: "100%", mt: 3 }}
           >
             Add Course
+          </Button>
+        )}
+      </Grid>
+
+      <Grid item xs={12} md={8}>
+        {error && (
+          <Button
+            color="error"
+            variant="outlined"
+            size="small"
+            fullWidth
+            sx={{ mt: 1, py: 0, fontSize: "13px" }}
+          >
+            {error}
           </Button>
         )}
       </Grid>

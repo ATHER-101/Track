@@ -95,6 +95,7 @@ const Page = () => {
 
   //Delete course
   const deleteCourse = async (course_id: String) => {
+    setLoading(true);
     setCourses(courses.filter((course) => course.courseId !== course_id));
 
     const deletedCourse = await fetch("/api/courses", {
@@ -133,6 +134,7 @@ const Page = () => {
         courseId: course_id,
       }),
     });
+    setLoading(false);
   };
 
   return (
