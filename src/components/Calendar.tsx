@@ -34,7 +34,7 @@ export default function DateCalendarValue({
             width: '100%',
           },
           '& .MuiDayCalendar-header': {
-            backgroundColor: '#d6dea',
+            backgroundColor: '#d6deea',
             width: '100%',
           },
         }}
@@ -42,5 +42,3 @@ export default function DateCalendarValue({
     </LocalizationProvider>
   );
 }
-
-// bgcolor:"#d6dfea", borderRadius:1
