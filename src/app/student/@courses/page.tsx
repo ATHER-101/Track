@@ -25,7 +25,6 @@ const Page = () => {
     if (!!rollNo) {
       try {
         const response = await fetch(`/api/students/${rollNo}`, {
-          cache: "no-store",
         });
         const res = await response.json();
 
@@ -40,35 +39,29 @@ const Page = () => {
               courses: [],
             }),
           });
+          setCourses([]);
         } else {
-          const tempCourses = await Promise.all(
-            res.courses.map(async (course_id: string) => {
-              const courseResponse = await fetch(`/api/courses/${course_id}`, {
-                cache: "no-store",
-              });
-              const courseData = await courseResponse.json();
+          const tempCourses = res.courses.map((course: any) => {
+            let presentCount: number = 0;
+            course.attendance.map((element: any) => {
+              const found = element.present.find(
+                (element: any) => element === rollNo
+              );
+              if (found !== undefined) {
+                presentCount++;
+              }
+            });
 
-              let presentCount: number = 0;
-              courseData.attendance.map((element: any) => {
-                const found = element.present.find(
-                  (element: any) => element === rollNo
-                );
-                if (found !== undefined) {
-                  presentCount++;
-                }
-              });
-
-              return {
-                courseId: course_id,
-                totalAttendance: presentCount,
-                totalClasses: courseData.attendance.length,
-                courseName: courseData.courseName,
-              };
-            })
-          );
+            return {
+              courseId: course._id,
+              totalAttendance: presentCount,
+              totalClasses: course.attendance.length,
+              courseName: course.courseName,
+            };
+          });
           setCourses(tempCourses);
-          setLoading(false);
         }
+        setLoading(false);
       } catch (error) {
         console.error("Failed to fetch courses:", error);
       }
@@ -90,7 +83,7 @@ const Page = () => {
   return (
     <>
       <Grid container spacing={2}>
-        {courses.map((course: any,index) => (
+        {courses.map((course: any, index) => (
           <Grid key={index} item xs={6} sm={6} md={4} lg={2.4}>
             <Box width="100%" height="100%">
               <StudentCourseCard

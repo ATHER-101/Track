@@ -30,7 +30,7 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
   const [loading, setLoading] = useState<boolean>(true);
 
   const [emailId, setEmailId] = useState<string | undefined>();
-
+  const [courseName,setCourseName] = useState<string>("");
   const [data, setData] = useState<string[][] | undefined>(undefined);
 
   const fetchData = useCallback(async () => {
@@ -62,7 +62,7 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
               }
             }
           });
-
+          setCourseName(res.courseName);
           setData(tempData);
           setLoading(false);
         } else {
@@ -97,7 +97,7 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
 
       const hiddenLink = document.createElement("a");
       hiddenLink.href = url;
-      hiddenLink.download = "export.csv";
+      hiddenLink.download = `${courseName.replace(/[^a-zA-Z0-9]/g, '_')}.csv`;
       hiddenLink.click();
 
       window.URL.revokeObjectURL(url);

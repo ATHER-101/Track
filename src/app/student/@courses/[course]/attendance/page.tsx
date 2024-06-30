@@ -28,6 +28,7 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
   const [loading, setLoading] = useState<boolean>(true);
 
   const [rollNo, setRollNo] = useState<string | undefined>();
+  const [courseName, setCourseName] = useState<string>("");
 
   const [data, setData] = useState<string[][] | undefined>(undefined);
 
@@ -54,6 +55,7 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
             }
           });
 
+          setCourseName(res.courseName);
           setData(tempData);
           setLoading(false);
         } else {
@@ -88,7 +90,7 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
 
       const hiddenLink = document.createElement("a");
       hiddenLink.href = url;
-      hiddenLink.download = "export.csv";
+      hiddenLink.download = `${rollNo}_${courseName.replace(/[^a-zA-Z0-9]/g, '_')}.csv`;
       hiddenLink.click();
 
       window.URL.revokeObjectURL(url);
@@ -98,7 +100,12 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
   return (
     <>
       {loading ? (
-        <Skeleton variant="rounded" width="100%" height={40} sx={{bgcolor:"white" }}/>
+        <Skeleton
+          variant="rounded"
+          width="100%"
+          height={40}
+          sx={{ bgcolor: "white" }}
+        />
       ) : (
         <Button
           fullWidth
@@ -111,7 +118,12 @@ const DownloadButton = ({ params }: { params: { course: string } }) => {
       )}
 
       {loading ? (
-        <Skeleton variant="rounded" width="100%" height={"92px"} sx={{ mt: 2, bgcolor:"white" }} />
+        <Skeleton
+          variant="rounded"
+          width="100%"
+          height={"92px"}
+          sx={{ mt: 2, bgcolor: "white" }}
+        />
       ) : (
         <Paper sx={{ borderRadius: "6px" }}>
           <TableContainer

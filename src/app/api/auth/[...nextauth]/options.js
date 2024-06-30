@@ -30,6 +30,10 @@ export const options = {
             clientSecret: process.env.GOOGLE_SECRET
         })
     ],
+    pages: {
+        signIn: '/signIn',
+        signOut: '/signOut',
+    },
     callbacks: {
         // async signIn({ user, account, profile, email, credentials }) {
         //     const emailPattern = /^[a-zA-Z0-9._%+-]+@iitdh\.ac\.in$/;

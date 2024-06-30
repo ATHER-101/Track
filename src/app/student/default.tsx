@@ -32,7 +32,6 @@ export default async function Page() {
           >
             <Avatar
               alt={session ? session?.user?.name : "User Name"}
-              src="/static/images/avatar/1.jpg"
             />
           </IconButton>
           <Box sx={{ flexGrow: 1 ,my:1}}> 

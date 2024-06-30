@@ -36,6 +36,7 @@ export default function DateCalendarValue({
           '& .MuiDayCalendar-header': {
             backgroundColor: '#d6deea',
             width: '100%',
+            marginBottom: '4px',
           },
         }}
       />

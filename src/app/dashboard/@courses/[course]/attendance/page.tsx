@@ -70,9 +70,7 @@ const QrReader = ({ params }: { params: { course: string } }) => {
 
       const date = getTodayDate();
 
-      fetch(`/api/courses/${params.course}`, {
-        cache: "no-store",
-      })
+      fetch(`/api/courses/${params.course}`)
         .then((response) => response.json())
         .then((response) => {
           const att = response.attendance?.find((e: any) => e.date === date);
@@ -147,8 +145,8 @@ const QrReader = ({ params }: { params: { course: string } }) => {
         body: JSON.stringify({ courseId, rollNo: scannedResult, date }),
       });
 
-      const res = await response.json();
-      console.log(res);
+      // const res = await response.json();
+      // console.log(res);
 
       setScannedResult("");
       // scanner.current?.start();

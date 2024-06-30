@@ -43,17 +43,19 @@ const Page = () => {
       try {
         const response = await fetch(`/api/professors/${emailId}`);
         const res = await response.json();
-        const tempCourses = await Promise.all(
-          res.courses.map(async (element: string) => {
-            const courseResponse = await fetch(`/api/courses/${element}`);
-            const courseData = await courseResponse.json();
+
+        if (res.error === "Professor not found") {
+          setCourses([]);
+        } else {
+          const tempCourses = res.courses.map((course: any) => {
             return {
-              schedule: courseData.schedule,
-              courseName: courseData.courseName,
+              schedule: course.schedule,
+              courseName: course.courseName,
             };
-          })
-        );
-        setCourses(tempCourses);
+          });
+
+          setCourses(tempCourses);
+        }
       } catch (error) {
         console.error("Failed to fetch courses:", error);
       }

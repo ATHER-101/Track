@@ -42,9 +42,7 @@ const Page = () => {
   const fetchCourses = useCallback(async () => {
     if (!!emailId) {
       try {
-        const response = await fetch(`/api/professors/${emailId}`, {
-          cache: "no-store",
-        });
+        const response = await fetch(`/api/professors/${emailId}`);
         const res = await response.json();
 
         if (!!emailId && res.error === "Professor not found") {
@@ -58,23 +56,19 @@ const Page = () => {
               courses: [],
             }),
           });
+          setCourses([]);
         } else {
-          const tempCourses = await Promise.all(
-            res.courses.map(async (course_id: string) => {
-              const courseResponse = await fetch(`/api/courses/${course_id}`, {
-                cache: "no-store",
-              });
-              const courseData = await courseResponse.json();
-              return {
-                courseId: course_id,
-                totalClasses: courseData.attendance.length,
-                courseName: courseData.courseName,
-              };
-            })
-          );
+          const tempCourses = res.courses.map((course: any) => {
+            return {
+              courseId: course._id,
+              totalClasses: course.attendance.length,
+              courseName: course.courseName,
+            };
+          });
+
           setCourses(tempCourses);
-          setLoading(false);
         }
+        setLoading(false);
       } catch (error) {
         console.error("Failed to fetch courses:", error);
       }
@@ -108,39 +102,15 @@ const Page = () => {
       }),
     });
 
-    const deleteRes = await deletedCourse.json();
-    console.log(deleteRes);
-
-    deleteRes.students.map(async (rollNo: String) => {
-      await fetch("/api/students", {
-        method: "DELETE",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          rollNo: rollNo,
-          courseId: course_id,
-        }),
-      });
-    });
-
-    await fetch("/api/professors", {
-      method: "DELETE",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({
-        emailId: deleteRes.professor,
-        courseId: course_id,
-      }),
-    });
+    // const deleteRes = await deletedCourse.json();
+    // console.log(deleteRes);
     setLoading(false);
   };
 
   return (
     <>
       <Grid container spacing={2}>
-        {courses.map((course: any,index) => (
+        {courses.map((course: any, index) => (
           <Grid key={index} item xs={6} sm={6} md={4} lg={2.4}>
             <CourseCard
               key={course.courseId}
@@ -153,16 +123,18 @@ const Page = () => {
           </Grid>
         ))}
       </Grid>
-      {!loading && <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-        <Button
-          variant="contained"
-          href="/dashboard/add-course"
-          sx={{ width: "100%", my: 2 }}
-          startIcon={<PlusIcon />}
-        >
-          Add Course
-        </Button>
-      </Grid>}
+      {!loading && (
+        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+          <Button
+            variant="contained"
+            href="/dashboard/add-course"
+            sx={{ width: "100%", my: 2 }}
+            startIcon={<PlusIcon />}
+          >
+            Add Course
+          </Button>
+        </Grid>
+      )}
     </>
   );
 };

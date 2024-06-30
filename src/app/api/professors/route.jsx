@@ -58,27 +58,3 @@ export async function PUT(request) {
         return new NextResponse(JSON.stringify({ message: error.message }), { status: 501 });
     }
 }
-
-export async function DELETE(request) {
-    const body = await request.json();
-    const emailId = body.emailId;
-    const courseId = body.courseId;
-
-    try {
-        await connectToDB();
-
-        const updatedCourse = await Professor.findOneAndUpdate(
-            { "emailId": emailId },
-            { $pull: { courses: courseId } },
-            { new: true }
-        );
-
-        if (!updatedCourse) {
-            return new NextResponse(JSON.stringify({ message: 'Student not found' }), { status: 404 });
-        }
-
-        return new NextResponse(JSON.stringify(updatedCourse), { status: 200 });
-    } catch (error) {
-        return new NextResponse(JSON.stringify({ message: 'Error deleting Course', error: error.message }), { status: 500 });
-    }
-}

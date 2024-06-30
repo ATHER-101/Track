@@ -1,5 +1,7 @@
 import connectToDB from '../../../../utils/connectDB';
 import Course from '../../../../models/Courses';
+import Student from '../../../../models/Students'
+import Professor from '../../../../models/Professor'
 import { NextResponse } from 'next/server';
 
 export async function GET() {
@@ -16,8 +18,38 @@ export async function POST(request) {
     const body = await request.json();
     try {
         await connectToDB();
-        const data= new Course(body);
+
+        const data = new Course(body);
         data.save();
+
+        const students = data.students;
+        const bulkOps = students.map((rollNo) => ({
+            updateOne: {
+                filter: { rollNo },
+                update: { $addToSet: { courses: data._id } },
+                upsert: true
+            }
+        }));
+
+        try {
+            const result = await Student.bulkWrite(bulkOps, { ordered: false });
+            console.log(result);
+        } catch (err) {
+            console.error('Error during bulkWrite:', err);
+        }
+
+        const emailId = data.professor;
+        try {
+            const result = await Professor.updateOne(
+                { emailId },
+                { $addToSet: { courses: data._id } },
+                { upsert: true }
+            );
+            console.log(result);
+        } catch (err) {
+            console.error('Error during updateOne:', err);
+        }
+
         return new NextResponse(JSON.stringify(data));
     } catch (error) {
         return new NextResponse(error);
@@ -31,35 +63,27 @@ export async function PUT(request) {
         const date = data.date;
         const rollNo = data.rollNo;
 
-        console.log(courseId,date,rollNo);
+        console.log(courseId, date, rollNo);
 
         await connectToDB();
 
-        const course = await Course.findById(courseId);
-        if (!course) {
-            return new NextResponse(JSON.stringify({ message: 'Course not found' }), { status: 404 });
+        let updateResult = await Course.findOneAndUpdate(
+            { _id: courseId, 'attendance.date': date },
+            {
+                $addToSet: { 'attendance.$.present': rollNo }
+            },
+            { new: true }
+        );
+
+        if (!updateResult) {
+            updateResult = await Course.findByIdAndUpdate(
+                {_id: courseId},
+                { $push: { attendance: { date, present: [rollNo] } } },
+                { new: true }
+            );
         }
 
-        let attendanceUpdated = false;
-
-        // Loop through the attendance array to find the matching date
-        course.attendance.forEach((element) => {
-            if (element.date === date) {
-                element.present.push(rollNo); // Push rollNo to the present array
-                attendanceUpdated = true;
-            }
-        });
-
-        if (attendanceUpdated) {
-            // Save the updated course document
-            await course.save();
-        } else {
-            // Add a new attendance record
-            course.attendance.push({ date: date, present: [rollNo] });
-            await course.save();
-        }
-
-        return new NextResponse(JSON.stringify(course.attendance), { status: 200 });
+        return new NextResponse(JSON.stringify(updateResult), { status: 200 });
     } catch (error) {
         console.log(error);
         return new NextResponse(JSON.stringify({ message: error.message }), { status: 501 });
@@ -75,6 +99,32 @@ export async function DELETE(request) {
 
         if (!deletedCourse) {
             return new NextResponse(JSON.stringify({ message: 'Course not found' }), { status: 404 });
+        }
+
+        const students = deletedCourse.students;
+        const bulkOps = students.map((rollNo) => ({
+            updateOne: {
+                filter: { rollNo },
+                update: { $pull: { courses: courseId } }
+            }
+        }));
+
+        try {
+            const result = await Student.bulkWrite(bulkOps, { ordered: false });
+            console.log(result);
+        } catch (err) {
+            console.error('Error during bulkWrite:', err);
+        }
+
+        const emailId = deletedCourse.professor;
+        try {
+            const result = await Professor.updateOne(
+                { emailId },
+                { $pull: { courses: courseId } }
+            );
+            console.log(result);
+        } catch (err) {
+            console.error('Error during updateOne:', err);
         }
 
         return new NextResponse(JSON.stringify(deletedCourse), { status: 200 });

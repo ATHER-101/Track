@@ -107,38 +107,8 @@ const Page = () => {
               }),
             });
 
-            const res = await response.json();
-            console.log(res);
-
-            res.students.map(async (rollNo: String) => {
-              const studentResponse = await fetch("/api/students", {
-                method: "PUT",
-                headers: {
-                  "Content-type": "application/json",
-                },
-                body: JSON.stringify({
-                  rollNo: rollNo,
-                  courseId: res._id,
-                }),
-              });
-
-              const studentRes = await studentResponse.json();
-              console.log(studentRes);
-            });
-
-            const professorResponse = await fetch("/api/professors", {
-              method: "PUT",
-              headers: {
-                "Content-type": "application/json",
-              },
-              body: JSON.stringify({
-                emailId: emailId,
-                courseId: res._id,
-              }),
-            });
-
-            const professorRes = await professorResponse.json();
-            console.log(professorRes);
+            // const res = await response.json();
+            // console.log(res);
 
             router.back();
             setSubmiting(false);
